@@ -1,9 +1,17 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { Container, Button } from 'react-bootstrap';
+import { Container, Form, InputGroup } from 'react-bootstrap';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function Login() {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100">
             <div className="text-center">
@@ -11,7 +19,38 @@ function Login() {
                     Welcome Back
                 </h2>
                 <p className="text-dark">Please enter your credentials to log in.</p>
-                <p className="text-dark mt-3">Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link></p>
+                <Form className="mt-3">
+                    <InputGroup className="mb-3" style={{ backgroundColor: '#f1f3f5', borderRadius: '5px' }}>
+                        <InputGroup.Text className="bg-transparent border-0">
+                            <FaEnvelope color="#6c757d" />
+                        </InputGroup.Text>
+                        <Form.Control
+                            type="email"
+                            placeholder="Email"
+                            className="bg-transparent border-0 text-dark"
+                        />
+                    </InputGroup>
+                    <InputGroup className="mb-3" style={{ backgroundColor: '#f1f3f5', borderRadius: '5px' }}>
+                        <InputGroup.Text className="bg-transparent border-0">
+                            <FaLock color="#6c757d" />
+                        </InputGroup.Text>
+                        <Form.Control
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Password"
+                            className="bg-transparent border-0 text-dark"
+                        />
+                        <InputGroup.Text
+                            className="bg-transparent border-0"
+                            onClick={togglePasswordVisibility}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {showPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                        </InputGroup.Text>
+                    </InputGroup>
+                </Form>
+                <p className="text-dark mt-3">
+                    Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link>
+                </p>
             </div>
         </Container>
     );
@@ -25,7 +64,9 @@ function Register() {
                     Create an Account
                 </h2>
                 <p className="text-dark">Please create a new account here.</p>
-                <p className="text-dark mt-3">Already have an account? <Link to="/login" className="text-dark">Sign In</Link></p>
+                <p className="text-dark mt-3">
+                    Already have an account? <Link to="/login" className="text-dark">Sign In</Link>
+                </p>
             </div>
         </Container>
     );
@@ -36,9 +77,9 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
+                    <Route path="/" element={<Login />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/" element={<Login />} />
                 </Routes>
             </div>
         </Router>
