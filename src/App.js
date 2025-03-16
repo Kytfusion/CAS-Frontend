@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {useState, useEffect} from 'react';
 import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
-import {FaEnvelope, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa';
+import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner} from 'react-icons/fa';
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -11,8 +11,9 @@ function Login() {
     const [password, setPassword] = useState('');
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [currentMessage, setCurrentMessage] = useState('');
+    const [showText, setShowText] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -23,8 +24,7 @@ function Login() {
         const isValid = emailRegex.test(value);
         setIsEmailValid(isValid);
         if (!isValid && value) {
-            setErrorMessage('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
-            setShowModal(true);
+            displayNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
         }
         return isValid;
     };
@@ -34,8 +34,7 @@ function Login() {
         const isValid = passwordRegex.test(value);
         setIsPasswordValid(isValid);
         if (!isValid && value) {
-            setErrorMessage('Password: 6+ chars, 1 letter, 1 number');
-            setShowModal(true);
+            displayNotification('Password: 6+ chars, 1 letter, 1 number');
         }
         return isValid;
     };
@@ -44,7 +43,20 @@ function Login() {
         e.preventDefault();
         if (isEmailValid && isPasswordValid) {
             console.log('Login Data:', {email, password});
-            setErrorMessage(`Logged in with: ${email}, ${password}`);
+            displayNotification(`Logged in with: ${email}, ${password}`);
+        }
+    };
+
+    const displayNotification = (message) => {
+        if (showModal) {
+            setShowModal(false);
+            setShowText(false);
+            setTimeout(() => {
+                setCurrentMessage(message);
+                setShowModal(true);
+            }, 500);
+        } else {
+            setCurrentMessage(message);
             setShowModal(true);
         }
     };
@@ -63,11 +75,22 @@ function Login() {
 
     useEffect(() => {
         if (showModal) {
-            const timer = setTimeout(() => {
-                setShowModal(false);
-                setErrorMessage('');
-            }, 3000); // Modalul dispare după 3 secunde
-            return () => clearTimeout(timer);
+            const textTimer = setTimeout(() => {
+                setShowText(true);
+            }, 1000);
+
+            const closeTimer = setTimeout(() => {
+                setShowText(false);
+                setTimeout(() => {
+                    setShowModal(false);
+                    setCurrentMessage('');
+                }, 500);
+            }, 3000);
+
+            return () => {
+                clearTimeout(textTimer);
+                clearTimeout(closeTimer);
+            };
         }
     }, [showModal]);
 
@@ -155,26 +178,86 @@ function Login() {
                         transform: 'translateX(-50%)',
                         backgroundColor: '#212529',
                         color: '#fff',
-                        padding: '8px 20px',
-                        borderRadius: '20px',
+                        padding: '0 20px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                         zIndex: 1000,
-                        animation: 'slideDown 0.5s ease-in-out forwards, slideUp 0.5s ease-in-out 2.5s forwards',
+                        animation: 'openDynamicIsland 1s ease-in-out forwards, closeDynamicIsland 1s ease-in-out 3s forwards',
                     }}
                 >
-                    <p style={{margin: 0, fontSize: '14px'}}>{errorMessage}</p>
+                    <FaSpinner
+                        style={{
+                            position: 'absolute',
+                            animation: 'spin 1s linear infinite',
+                            opacity: showText ? 0 : 1,
+                            transition: 'opacity 0.3s ease',
+                        }}
+                    />
+                    <p
+                        style={{
+                            margin: 0,
+                            fontSize: '14px',
+                            opacity: showText ? 1 : 0,
+                            transition: 'opacity 0.3s ease',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '260px', // Limităm lățimea pentru a preveni strângerea textului
+                        }}
+                    >
+                        {currentMessage}
+                    </p>
                 </div>
             )}
 
             <style>
                 {`
-                    @keyframes slideDown {
-                        0% { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-                        100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    @keyframes openDynamicIsland {
+                        0% {
+                            transform: translateX(-50%) translateY(-100%);
+                            width: 40px;
+                            border-radius: 50%;
+                            opacity: 0;
+                        }
+                        50% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 40px;
+                            border-radius: 50%;
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 300px;
+                            border-radius: 20px;
+                            opacity: 1;
+                        }
                     }
-                    @keyframes slideUp {
-                        0% { transform: translateX(-50%) translateY(0); opacity: 1; }
-                        100% { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                    @keyframes closeDynamicIsland {
+                        0% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 300px;
+                            border-radius: 20px;
+                            opacity: 1;
+                        }
+                        50% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 40px;
+                            border-radius: 50%;
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateX(-50%) translateY(-100%);
+                            width: 40px;
+                            border-radius: 50%;
+                            opacity: 0;
+                        }
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
                     }
                 `}
             </style>
