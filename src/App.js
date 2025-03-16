@@ -5,22 +5,28 @@ import { Container, Button } from 'react-bootstrap';
 
 function Login() {
     return (
-        <Container className="text-center mt-5">
-            <p>Enter your credentials to log in.</p>
-            <Button variant="primary" as={Link} to="/register" className="mt-3">
-                Go to Register
-            </Button>
+        <Container className="d-flex justify-content-center align-items-center min-vh-100">
+            <div className="text-center">
+                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+                    Welcome Back
+                </h2>
+                <p className="text-dark">Please enter your credentials to log in.</p>
+                <p className="text-dark mt-3">Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link></p>
+            </div>
         </Container>
     );
 }
 
 function Register() {
     return (
-        <Container className="text-center mt-5">
-            <p>Create a new account here.</p>
-            <Button variant="primary" as={Link} to="/login" className="mt-3">
-                Go to Login
-            </Button>
+        <Container className="d-flex justify-content-center align-items-center min-vh-100">
+            <div className="text-center">
+                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+                    Create an Account
+                </h2>
+                <p className="text-dark">Please create a new account here.</p>
+                <p className="text-dark mt-3">Already have an account? <Link to="/login" className="text-dark">Sign In</Link></p>
+            </div>
         </Container>
     );
 }
