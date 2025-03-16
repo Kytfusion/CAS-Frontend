@@ -1,9 +1,9 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {useState, useEffect} from 'react';
-import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
-import {Container, Form, InputGroup, Button} from 'react-bootstrap';
-import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner} from 'react-icons/fa';
+import { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { Container, Form, InputGroup, Button } from 'react-bootstrap';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +42,7 @@ function Login() {
     const handleSignIn = (e) => {
         e.preventDefault();
         if (isEmailValid && isPasswordValid) {
-            console.log('Login Data:', {email, password});
+            console.log('Login Data:', { email, password });
             displayNotification(`Logged in with: ${email}, ${password}`);
         }
     };
@@ -96,8 +96,8 @@ function Login() {
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center">
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+            <div className="text-center w-100" style={{ maxWidth: '400px' }}>
+                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
                     Welcome Back
                 </h2>
                 <p className="text-dark">Please enter your credentials to log in.</p>
@@ -111,7 +111,7 @@ function Login() {
                         }}
                     >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaEnvelope color="#6c757d"/>
+                            <FaEnvelope color="#6c757d" />
                         </InputGroup.Text>
                         <Form.Control
                             type="email"
@@ -130,7 +130,7 @@ function Login() {
                         }}
                     >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaLock color="#6c757d"/>
+                            <FaLock color="#6c757d" />
                         </InputGroup.Text>
                         <Form.Control
                             type={showPassword ? 'text' : 'password'}
@@ -142,12 +142,12 @@ function Login() {
                         <InputGroup.Text
                             className="bg-transparent border-0"
                             onClick={togglePasswordVisibility}
-                            style={{cursor: 'pointer'}}
+                            style={{ cursor: 'pointer' }}
                         >
-                            {showPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
+                            {showPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
                         </InputGroup.Text>
                     </InputGroup>
-                    <div className="text-end mt-2" style={{width: '100%'}}>
+                    <div className="text-end mt-2" style={{ width: '100%' }}>
                         <Link to="/reset-password" className="text-dark">Reset: Password</Link>
                     </div>
                     <Button
@@ -163,7 +163,7 @@ function Login() {
                     >
                         Sign In
                     </Button>
-                    <p className="text-start mt-3" style={{width: '100%'}}>
+                    <p className="text-start mt-3" style={{ width: '100%' }}>
                         Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link>
                     </p>
                 </Form>
@@ -205,7 +205,7 @@ function Login() {
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            maxWidth: '260px', // Limităm lățimea pentru a preveni strângerea textului
+                            maxWidth: '260px',
                         }}
                     >
                         {currentMessage}
@@ -219,13 +219,13 @@ function Login() {
                         0% {
                             transform: translateX(-50%) translateY(-100%);
                             width: 40px;
-                            border-radius: 50%;
+                            border-radius: '50%;
                             opacity: 0;
                         }
                         50% {
                             transform: translateX(-50%) translateY(0);
                             width: 40px;
-                            border-radius: 50%;
+                            border-radius: '50%;
                             opacity: 1;
                         }
                         100% {
@@ -245,13 +245,13 @@ function Login() {
                         50% {
                             transform: translateX(-50%) translateY(0);
                             width: 40px;
-                            border-radius: 50%;
+                            border-radius: '50%;
                             opacity: 1;
                         }
                         100% {
                             transform: translateX(-50%) translateY(-100%);
                             width: 40px;
-                            border-radius: 50%;
+                            border-radius: '50%;
                             opacity: 0;
                         }
                     }
@@ -267,13 +267,13 @@ function Login() {
 
 function Register() {
     return (
-        <Container className="d-flex justify-content-center align-items-center min-vh-100">
-            <div className="text-center">
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+        <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
+            <div className="text-center w-100" style={{ maxWidth: '400px' }}>
+                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
                     Create an Account
                 </h2>
                 <p className="text-dark">Please create a new account here.</p>
-                <p className="text-start mt-3" style={{width: '100%'}}>
+                <p className="text-start mt-3" style={{ width: '100%' }}>
                     Already have an account? <Link to="/login" className="text-dark">Sign In</Link>
                 </p>
             </div>
@@ -282,17 +282,285 @@ function Register() {
 }
 
 function ResetPassword() {
+    const [email, setEmail] = useState('');
+    const [isEmailValid, setIsEmailValid] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [currentMessage, setCurrentMessage] = useState('');
+    const [showText, setShowText] = useState(false);
+    const [step, setStep] = useState(1);
+    const [code, setCode] = useState(['', '', '', '', '', '']);
+    const [isCodeValid, setIsCodeValid] = useState(null);
+    const inputRefs = useRef([]);
+
+    const validateEmail = (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(value);
+        setIsEmailValid(isValid);
+        if (!isValid && value) {
+            displayNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
+        }
+        return isValid;
+    };
+
+    const validateCode = (codeArray) => {
+        const isValid = codeArray.every((digit) => /^\d$/.test(digit));
+        setIsCodeValid(isValid);
+        if (!isValid && codeArray.some((digit) => digit !== '')) {
+            displayNotification('Code must contain exactly 6 digits.');
+        }
+        return isValid;
+    };
+
+    const handleEmailChange = (e) => {
+        const value = e.target.value;
+        setEmail(value);
+        validateEmail(value);
+    };
+
+    const handleCodeChange = (index, value) => {
+        if (/^\d$/.test(value) || value === '') {
+            const newCode = [...code];
+            newCode[index] = value;
+            setCode(newCode);
+            validateCode(newCode);
+
+            if (value !== '' && index < 5) {
+                inputRefs.current[index + 1].focus();
+            }
+        }
+    };
+
+    const handleKeyDown = (index, e) => {
+        if (e.key === 'Backspace' && code[index] === '' && index > 0) {
+            inputRefs.current[index - 1].focus();
+        }
+    };
+
+    const handleNext = (e) => {
+        e.preventDefault();
+        if (step === 1) {
+            if (isEmailValid) {
+                console.log('Server response: 200, Email:', email);
+                displayNotification(`Verification code sent to ${email}`);
+                setStep(2);
+            } else if (email) {
+                console.log('Server response: 400, Invalid email');
+                displayNotification('Invalid email address. Please try again.');
+            } else {
+                displayNotification('Please enter your email address.');
+            }
+        } else if (step === 2) {
+            if (isCodeValid) {
+                console.log('Code verified:', code.join(''));
+                displayNotification('Code verified successfully!');
+            } else if (code.some((digit) => digit !== '')) {
+                displayNotification('Invalid code. Please try again.');
+            } else {
+                displayNotification('Please enter the verification code.');
+            }
+        }
+    };
+
+    const displayNotification = (message) => {
+        if (showModal) {
+            setShowModal(false);
+            setShowText(false);
+            setTimeout(() => {
+                setCurrentMessage(message);
+                setShowModal(true);
+            }, 500);
+        } else {
+            setCurrentMessage(message);
+            setShowModal(true);
+        }
+    };
+
+    useEffect(() => {
+        if (showModal) {
+            const textTimer = setTimeout(() => {
+                setShowText(true);
+            }, 1000);
+
+            const closeTimer = setTimeout(() => {
+                setShowText(false);
+                setTimeout(() => {
+                    setShowModal(false);
+                    setCurrentMessage('');
+                }, 500);
+            }, 3000);
+
+            return () => {
+                clearTimeout(textTimer);
+                clearTimeout(closeTimer);
+            };
+        }
+    }, [showModal]);
+
     return (
-        <Container className="d-flex justify-content-center align-items-center min-vh-100">
-            <div className="text-center">
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+        <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
+            <div className="text-center w-100" style={{ maxWidth: '400px' }}>
+                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
                     Reset Password
                 </h2>
                 <p className="text-dark">Please follow the instructions to reset your password.</p>
-                <div className="text-end mt-3" style={{width: '100%'}}>
+                <Form className="mt-3" onSubmit={handleNext}>
+                    {step === 1 ? (
+                        <InputGroup
+                            className="mb-3"
+                            style={{
+                                backgroundColor: '#f1f3f5',
+                                borderRadius: '5px',
+                                borderBottom: isEmailValid === false ? '2px solid red' : isEmailValid === true ? '2px solid green' : 'none',
+                            }}
+                        >
+                            <InputGroup.Text className="bg-transparent border-0">
+                                <FaEnvelope color="#6c757d" />
+                            </InputGroup.Text>
+                            <Form.Control
+                                type="email"
+                                placeholder="Email"
+                                className="bg-transparent border-0 text-dark"
+                                value={email}
+                                onChange={handleEmailChange}
+                            />
+                        </InputGroup>
+                    ) : (
+                        <div className="d-flex justify-content-center gap-2 mb-3">
+                            {code.map((digit, index) => (
+                                <Form.Control
+                                    key={index}
+                                    type="text"
+                                    className="text-center"
+                                    style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        backgroundColor: '#f1f3f5',
+                                        borderRadius: '5px',
+                                        border: isCodeValid === false && digit !== '' ? '2px solid red' : isCodeValid === true ? '2px solid green' : 'none',
+                                    }}
+                                    value={digit}
+                                    onChange={(e) => handleCodeChange(index, e.target.value)}
+                                    onKeyDown={(e) => handleKeyDown(index, e)}
+                                    maxLength={1}
+                                    ref={(el) => (inputRefs.current[index] = el)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                    <Button
+                        type="submit"
+                        className="w-100 mt-3"
+                        style={{
+                            backgroundColor: '#212529',
+                            border: 'none',
+                            borderRadius: '5px',
+                            padding: '10px',
+                        }}
+                        disabled={
+                            (step === 1 && (email.length === 0 || !isEmailValid)) ||
+                            (step === 2 && (code.some((digit) => digit === '') || !isCodeValid))
+                        }
+                    >
+                        Next
+                    </Button>
+                </Form>
+                <div className="text-end mt-3" style={{ width: '100%' }}>
                     <Link to="/login" className="text-dark">Back to Login</Link>
                 </div>
             </div>
+
+            {showModal && (
+                <div
+                    className="position-fixed"
+                    style={{
+                        top: '10px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: '#212529',
+                        color: '#fff',
+                        padding: '0 20px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                        zIndex: 1000,
+                        animation: 'openDynamicIsland 1s ease-in-out forwards, closeDynamicIsland 1s ease-in-out 3s forwards',
+                    }}
+                >
+                    <FaSpinner
+                        style={{
+                            position: 'absolute',
+                            animation: 'spin 1s linear infinite',
+                            opacity: showText ? 0 : 1,
+                            transition: 'opacity 0.3s ease',
+                        }}
+                    />
+                    <p
+                        style={{
+                            margin: 0,
+                            fontSize: '14px',
+                            opacity: showText ? 1 : 0,
+                            transition: 'opacity 0.3s ease',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '260px',
+                        }}
+                    >
+                        {currentMessage}
+                    </p>
+                </div>
+            )}
+
+            <style>
+                {`
+                    @keyframes openDynamicIsland {
+                        0% {
+                            transform: translateX(-50%) translateY(-100%);
+                            width: 40px;
+                            border-radius: '50%;
+                            opacity: 0;
+                        }
+                        50% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 40px;
+                            border-radius: '50%;
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 300px;
+                            border-radius: 20px;
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes closeDynamicIsland {
+                        0% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 300px;
+                            border-radius: 20px;
+                            opacity: 1;
+                        }
+                        50% {
+                            transform: translateX(-50%) translateY(0);
+                            width: 40px;
+                            border-radius: '50%;
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateX(-50%) translateY(-100%);
+                            width: 40px;
+                            border-radius: '50%;
+                            opacity: 0;
+                        }
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}
+            </style>
         </Container>
     );
 }
@@ -302,10 +570,10 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<Login/>}/>
-                    <Route path="/login" element={<Login/>}/>
-                    <Route path="/register" element={<Register/>}/>
-                    <Route path="/reset-password" element={<ResetPassword/>}/>
+                    <Route path="/" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                 </Routes>
             </div>
         </Router>
