@@ -296,6 +296,10 @@ function ResetPassword() {
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [initialEmail, setInitialEmail] = useState('');
+    const [initialCode, setInitialCode] = useState(['', '', '', '', '', '']);
+    const [initialNewPassword, setInitialNewPassword] = useState('');
+    const [initialConfirmPassword, setInitialConfirmPassword] = useState('');
     const inputRefs = useRef([]);
 
     const validateEmail = (value) => {
@@ -391,6 +395,7 @@ function ResetPassword() {
                 console.log('Server response: 200, Email:', email);
                 displayNotification(`Verification code sent to ${email}`);
                 setStep(2);
+                setInitialEmail(email);
             } else if (email) {
                 console.log('Server response: 400, Invalid email');
                 displayNotification('Invalid email address. Please try again.');
@@ -402,6 +407,7 @@ function ResetPassword() {
                 console.log('Code verified:', code.join(''));
                 displayNotification('Code verified successfully!');
                 setStep(3);
+                setInitialCode([...code]);
             } else if (code.some((digit) => digit !== '')) {
                 displayNotification('Invalid code. Please try again.');
             } else {
@@ -415,6 +421,31 @@ function ResetPassword() {
                 displayNotification('Password: 6+ chars, 1 letter, 1 number');
             } else if (!isConfirmPasswordValid) {
                 displayNotification('Passwords do not match.');
+            }
+        }
+    };
+
+    const handleStepClick = (newStep) => {
+        if (newStep < step) {
+            const isEmailUnchanged = email === initialEmail;
+            const isCodeUnchanged = code.join('') === initialCode.join('');
+            const isPasswordUnchanged = newPassword === initialNewPassword && confirmPassword === initialConfirmPassword;
+
+            if (newStep === 1 && isEmailUnchanged) {
+                setStep(newStep);
+            } else if (newStep === 2 && isCodeUnchanged && step > 2) {
+                setStep(newStep);
+            } else if (newStep === 3 && isPasswordUnchanged && step > 3) {
+                setStep(newStep);
+            }
+        } else if (newStep > step) {
+            // Permite navigarea doar prin "Next"
+            if (newStep === 2 && isEmailValid) {
+                setStep(newStep);
+                setInitialEmail(email);
+            } else if (newStep === 3 && isCodeValid) {
+                setStep(newStep);
+                setInitialCode([...code]);
             }
         }
     };
@@ -454,13 +485,89 @@ function ResetPassword() {
         }
     }, [showModal]);
 
+    // Determină subtitlul în funcție de pasul curent
+    const getStepInstruction = () => {
+        switch (step) {
+            case 1:
+                return 'Please enter your email to start the password reset process.';
+            case 2:
+                return 'Please enter the verification code sent to your email.';
+            case 3:
+                return 'Please set your new password to complete the reset.';
+            default:
+                return 'Please follow the instructions to reset your password.';
+        }
+    };
+
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
             <div className="text-center w-100" style={{ maxWidth: '400px' }}>
                 <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
                     Reset Password
                 </h2>
-                <p className="text-dark">Please follow the instructions to reset your password.</p>
+                <p className="text-dark mb-4">{getStepInstruction()}</p>
+                <div className="d-flex justify-content-between align-items-center mb-4 position-relative" style={{ width: '100%' }}>
+                    <div className="position-absolute" style={{ top: '50%', left: '16px', right: '16px', height: '2px', backgroundColor: '#6c757d', zIndex: 0 }}></div>
+                    <div
+                        style={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            backgroundColor: step >= 1 ? '#28a745' : '#6c757d',
+                            color: '#fff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                            cursor: step > 1 ? 'pointer' : 'default',
+                            zIndex: 1,
+                        }}
+                        onClick={() => handleStepClick(1)}
+                    >
+                        1
+                    </div>
+                    <div
+                        style={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            backgroundColor: step >= 2 ? '#28a745' : '#6c757d',
+                            color: '#fff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                            cursor: step > 2 ? 'pointer' : 'default',
+                            zIndex: 1,
+                        }}
+                        onClick={() => handleStepClick(2)}
+                    >
+                        2
+                    </div>
+                    <div
+                        style={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            backgroundColor: step >= 3 ? '#28a745' : '#6c757d',
+                            color: '#fff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                            cursor: 'default',
+                            zIndex: 1,
+                        }}
+                        onClick={() => handleStepClick(3)}
+                    >
+                        3
+                    </div>
+                </div>
+                <div className="d-flex justify-content-between mb-3" style={{ width: '100%' }}>
+                    <span className="text-dark">Email</span>
+                    <span className="text-dark">Code</span>
+                    <span className="text-dark">Password</span>
+                </div>
                 <Form className="mt-3" onSubmit={handleNext}>
                     {step === 1 ? (
                         <InputGroup
@@ -575,7 +682,7 @@ function ResetPassword() {
                             (step === 3 && (newPassword.length === 0 || !isNewPasswordValid || confirmPassword.length === 0 || !isConfirmPasswordValid))
                         }
                     >
-                        Next
+                        {step === 3 ? 'Reset Password' : 'Next'}
                     </Button>
                 </Form>
                 <div className="text-end mt-3" style={{ width: '100%' }}>
