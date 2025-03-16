@@ -1,9 +1,9 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { Container, Form, InputGroup, Button } from 'react-bootstrap';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
+import {useState, useEffect, useRef} from 'react';
+import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import {Container, Form, InputGroup, Button} from 'react-bootstrap';
+import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner} from 'react-icons/fa';
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +42,7 @@ function Login() {
     const handleSignIn = (e) => {
         e.preventDefault();
         if (isEmailValid && isPasswordValid) {
-            console.log('Login Data:', { email, password });
+            console.log('Login Data:', {email, password});
             displayNotification(`Logged in with: ${email}, ${password}`);
         }
     };
@@ -96,8 +96,8 @@ function Login() {
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{ maxWidth: '400px' }}>
-                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+            <div className="text-center w-100" style={{maxWidth: '400px'}}>
+                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
                     Welcome Back
                 </h2>
                 <p className="text-dark">Please enter your credentials to log in.</p>
@@ -111,7 +111,7 @@ function Login() {
                         }}
                     >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaEnvelope color="#6c757d" />
+                            <FaEnvelope color="#6c757d"/>
                         </InputGroup.Text>
                         <Form.Control
                             type="email"
@@ -130,7 +130,7 @@ function Login() {
                         }}
                     >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaLock color="#6c757d" />
+                            <FaLock color="#6c757d"/>
                         </InputGroup.Text>
                         <Form.Control
                             type={showPassword ? 'text' : 'password'}
@@ -142,12 +142,12 @@ function Login() {
                         <InputGroup.Text
                             className="bg-transparent border-0"
                             onClick={togglePasswordVisibility}
-                            style={{ cursor: 'pointer' }}
+                            style={{cursor: 'pointer'}}
                         >
-                            {showPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                            {showPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
                         </InputGroup.Text>
                     </InputGroup>
-                    <div className="text-end mt-2" style={{ width: '100%' }}>
+                    <div className="text-end mt-2" style={{width: '100%'}}>
                         <Link to="/reset-password" className="text-dark">Reset: Password</Link>
                     </div>
                     <Button
@@ -163,7 +163,7 @@ function Login() {
                     >
                         Sign In
                     </Button>
-                    <p className="text-start mt-3" style={{ width: '100%' }}>
+                    <p className="text-start mt-3" style={{width: '100%'}}>
                         Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link>
                     </p>
                 </Form>
@@ -268,12 +268,12 @@ function Login() {
 function Register() {
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{ maxWidth: '400px' }}>
-                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+            <div className="text-center w-100" style={{maxWidth: '400px'}}>
+                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
                     Create an Account
                 </h2>
                 <p className="text-dark">Please create a new account here.</p>
-                <p className="text-start mt-3" style={{ width: '100%' }}>
+                <p className="text-start mt-3" style={{width: '100%'}}>
                     Already have an account? <Link to="/login" className="text-dark">Sign In</Link>
                 </p>
             </div>
@@ -296,10 +296,8 @@ function ResetPassword() {
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [initialEmail, setInitialEmail] = useState('');
-    const [initialCode, setInitialCode] = useState(['', '', '', '', '', '']);
-    const [initialNewPassword, setInitialNewPassword] = useState('');
-    const [initialConfirmPassword, setInitialConfirmPassword] = useState('');
+    const [timer, setTimer] = useState(60);
+    const [showResendButton, setShowResendButton] = useState(false);
     const inputRefs = useRef([]);
 
     const validateEmail = (value) => {
@@ -395,7 +393,8 @@ function ResetPassword() {
                 console.log('Server response: 200, Email:', email);
                 displayNotification(`Verification code sent to ${email}`);
                 setStep(2);
-                setInitialEmail(email);
+                setTimer(60);
+                setShowResendButton(false);
             } else if (email) {
                 console.log('Server response: 400, Invalid email');
                 displayNotification('Invalid email address. Please try again.');
@@ -407,7 +406,6 @@ function ResetPassword() {
                 console.log('Code verified:', code.join(''));
                 displayNotification('Code verified successfully!');
                 setStep(3);
-                setInitialCode([...code]);
             } else if (code.some((digit) => digit !== '')) {
                 displayNotification('Invalid code. Please try again.');
             } else {
@@ -425,29 +423,17 @@ function ResetPassword() {
         }
     };
 
-    const handleStepClick = (newStep) => {
-        if (newStep < step) {
-            const isEmailUnchanged = email === initialEmail;
-            const isCodeUnchanged = code.join('') === initialCode.join('');
-            const isPasswordUnchanged = newPassword === initialNewPassword && confirmPassword === initialConfirmPassword;
-
-            if (newStep === 1 && isEmailUnchanged) {
-                setStep(newStep);
-            } else if (newStep === 2 && isCodeUnchanged && step > 2) {
-                setStep(newStep);
-            } else if (newStep === 3 && isPasswordUnchanged && step > 3) {
-                setStep(newStep);
-            }
-        } else if (newStep > step) {
-            // Permite navigarea doar prin "Next"
-            if (newStep === 2 && isEmailValid) {
-                setStep(newStep);
-                setInitialEmail(email);
-            } else if (newStep === 3 && isCodeValid) {
-                setStep(newStep);
-                setInitialCode([...code]);
-            }
+    const handlePreviousStep = () => {
+        if (step > 1) {
+            setStep(step - 1);
         }
+    };
+
+    const handleResendCode = () => {
+        console.log('Resending code to:', email);
+        displayNotification(`Verification code resent to ${email}`);
+        setTimer(60);
+        setShowResendButton(false);
     };
 
     const displayNotification = (message) => {
@@ -485,7 +471,22 @@ function ResetPassword() {
         }
     }, [showModal]);
 
-    // Determină subtitlul în funcție de pasul curent
+    useEffect(() => {
+        if (step === 2 && timer > 0 && !showResendButton) {
+            const interval = setInterval(() => {
+                setTimer((prev) => {
+                    if (prev <= 1) {
+                        setShowResendButton(true);
+                        clearInterval(interval);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [step, timer, showResendButton]);
+
     const getStepInstruction = () => {
         switch (step) {
             case 1:
@@ -501,13 +502,33 @@ function ResetPassword() {
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{ maxWidth: '400px' }}>
-                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+            <div className="text-center w-100" style={{maxWidth: '400px'}}>
+                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
                     Reset Password
                 </h2>
                 <p className="text-dark mb-4">{getStepInstruction()}</p>
-                <div className="d-flex justify-content-between align-items-center mb-4 position-relative" style={{ width: '100%' }}>
-                    <div className="position-absolute" style={{ top: '50%', left: '16px', right: '16px', height: '2px', backgroundColor: '#6c757d', zIndex: 0 }}></div>
+                <div className="d-flex justify-content-between align-items-center mb-4 position-relative"
+                     style={{width: '100%'}}>
+                    <div className="position-absolute" style={{
+                        top: '50%',
+                        left: '16px',
+                        right: '16px',
+                        height: '2px',
+                        backgroundColor: '#6c757d',
+                        zIndex: 0
+                    }}></div>
+                    <div
+                        className="position-absolute"
+                        style={{
+                            top: '50%',
+                            left: `${16 + (step - 1) * (100 / 3)}px`,
+                            width: `${(step - 1) * (100 / 3)}px`,
+                            height: '2px',
+                            backgroundColor: '#28a745',
+                            zIndex: 1,
+                            transition: 'width 0.3s ease, left 0.3s ease',
+                        }}
+                    ></div>
                     <div
                         style={{
                             width: '30px',
@@ -519,10 +540,8 @@ function ResetPassword() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '14px',
-                            cursor: step > 1 ? 'pointer' : 'default',
-                            zIndex: 1,
+                            zIndex: 2,
                         }}
-                        onClick={() => handleStepClick(1)}
                     >
                         1
                     </div>
@@ -537,10 +556,8 @@ function ResetPassword() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '14px',
-                            cursor: step > 2 ? 'pointer' : 'default',
-                            zIndex: 1,
+                            zIndex: 2,
                         }}
-                        onClick={() => handleStepClick(2)}
                     >
                         2
                     </div>
@@ -555,15 +572,13 @@ function ResetPassword() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '14px',
-                            cursor: 'default',
-                            zIndex: 1,
+                            zIndex: 2,
                         }}
-                        onClick={() => handleStepClick(3)}
                     >
                         3
                     </div>
                 </div>
-                <div className="d-flex justify-content-between mb-3" style={{ width: '100%' }}>
+                <div className="d-flex justify-content-between mb-3" style={{width: '100%'}}>
                     <span className="text-dark">Email</span>
                     <span className="text-dark">Code</span>
                     <span className="text-dark">Password</span>
@@ -579,7 +594,7 @@ function ResetPassword() {
                             }}
                         >
                             <InputGroup.Text className="bg-transparent border-0">
-                                <FaEnvelope color="#6c757d" />
+                                <FaEnvelope color="#6c757d"/>
                             </InputGroup.Text>
                             <Form.Control
                                 type="email"
@@ -590,27 +605,44 @@ function ResetPassword() {
                             />
                         </InputGroup>
                     ) : step === 2 ? (
-                        <div className="d-flex justify-content-center gap-2 mb-3">
-                            {code.map((digit, index) => (
-                                <Form.Control
-                                    key={index}
-                                    type="text"
-                                    className="text-center"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        backgroundColor: '#f1f3f5',
-                                        borderRadius: '5px',
-                                        border: isCodeValid === false && digit !== '' ? '2px solid red' : isCodeValid === true ? '2px solid green' : 'none',
-                                    }}
-                                    value={digit}
-                                    onChange={(e) => handleCodeChange(index, e.target.value)}
-                                    onKeyDown={(e) => handleKeyDown(index, e)}
-                                    maxLength={1}
-                                    ref={(el) => (inputRefs.current[index] = el)}
-                                />
-                            ))}
-                        </div>
+                        <>
+                            <div className="d-flex justify-content-center gap-2 mb-3">
+                                {code.map((digit, index) => (
+                                    <Form.Control
+                                        key={index}
+                                        type="text"
+                                        className="text-center"
+                                        style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            backgroundColor: '#f1f3f5',
+                                            borderRadius: '5px',
+                                            border: isCodeValid === false && digit !== '' ? '2px solid red' : isCodeValid === true ? '2px solid green' : 'none',
+                                        }}
+                                        value={digit}
+                                        onChange={(e) => handleCodeChange(index, e.target.value)}
+                                        onKeyDown={(e) => handleKeyDown(index, e)}
+                                        maxLength={1}
+                                        ref={(el) => (inputRefs.current[index] = el)}
+                                    />
+                                ))}
+                            </div>
+                            <div className="mb-3 text-start">
+                                {showResendButton ? (
+                                    <Button
+                                        variant="link"
+                                        className="text-dark p-0"
+                                        onClick={handleResendCode}
+                                    >
+                                        Resend Code
+                                    </Button>
+                                ) : (
+                                    <p className="text-dark">
+                                        Resend code available in {timer} seconds
+                                    </p>
+                                )}
+                            </div>
+                        </>
                     ) : (
                         <>
                             <InputGroup
@@ -622,7 +654,7 @@ function ResetPassword() {
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaLock color="#6c757d" />
+                                    <FaLock color="#6c757d"/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showNewPassword ? 'text' : 'password'}
@@ -634,9 +666,9 @@ function ResetPassword() {
                                 <InputGroup.Text
                                     className="bg-transparent border-0"
                                     onClick={toggleNewPasswordVisibility}
-                                    style={{ cursor: 'pointer' }}
+                                    style={{cursor: 'pointer'}}
                                 >
-                                    {showNewPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                                    {showNewPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
                                 </InputGroup.Text>
                             </InputGroup>
                             <InputGroup
@@ -648,7 +680,7 @@ function ResetPassword() {
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaLock color="#6c757d" />
+                                    <FaLock color="#6c757d"/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showConfirmPassword ? 'text' : 'password'}
@@ -660,9 +692,9 @@ function ResetPassword() {
                                 <InputGroup.Text
                                     className="bg-transparent border-0"
                                     onClick={toggleConfirmPasswordVisibility}
-                                    style={{ cursor: 'pointer' }}
+                                    style={{cursor: 'pointer'}}
                                 >
-                                    {showConfirmPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                                    {showConfirmPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
                                 </InputGroup.Text>
                             </InputGroup>
                         </>
@@ -685,8 +717,21 @@ function ResetPassword() {
                         {step === 3 ? 'Reset Password' : 'Next'}
                     </Button>
                 </Form>
-                <div className="text-end mt-3" style={{ width: '100%' }}>
-                    <Link to="/login" className="text-dark">Back to Login</Link>
+                <div className="d-flex justify-content-between mt-3" style={{width: '100%'}}>
+                    <div className="text-start">
+                        {step > 1 && (
+                            <span
+                                className="text-dark"
+                                style={{cursor: 'pointer'}}
+                                onClick={handlePreviousStep}
+                            >
+                                Back to Previous Step
+                            </span>
+                        )}
+                    </div>
+                    <div className="text-end">
+                        <Link to="/login" className="text-dark">Back to Login</Link>
+                    </div>
                 </div>
             </div>
 
@@ -791,10 +836,10 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/" element={<Login/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/register" element={<Register/>}/>
+                    <Route path="/reset-password" element={<ResetPassword/>}/>
                 </Routes>
             </div>
         </Router>
