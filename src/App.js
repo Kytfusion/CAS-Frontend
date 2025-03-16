@@ -290,6 +290,12 @@ function ResetPassword() {
     const [step, setStep] = useState(1);
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isCodeValid, setIsCodeValid] = useState(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isNewPasswordValid, setIsNewPasswordValid] = useState(null);
+    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const inputRefs = useRef([]);
 
     const validateEmail = (value) => {
@@ -307,6 +313,25 @@ function ResetPassword() {
         setIsCodeValid(isValid);
         if (!isValid && codeArray.some((digit) => digit !== '')) {
             displayNotification('Code must contain exactly 6 digits.');
+        }
+        return isValid;
+    };
+
+    const validatePassword = (value) => {
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+        const isValid = passwordRegex.test(value);
+        setIsNewPasswordValid(isValid);
+        if (!isValid && value) {
+            displayNotification('Password: 6+ chars, 1 letter, 1 number');
+        }
+        return isValid;
+    };
+
+    const validateConfirmPassword = (value) => {
+        const isValid = value === newPassword;
+        setIsConfirmPasswordValid(isValid);
+        if (!isValid && value) {
+            displayNotification('Passwords do not match.');
         }
         return isValid;
     };
@@ -336,6 +361,29 @@ function ResetPassword() {
         }
     };
 
+    const handleNewPasswordChange = (e) => {
+        const value = e.target.value;
+        setNewPassword(value);
+        validatePassword(value);
+        if (confirmPassword) {
+            validateConfirmPassword(confirmPassword);
+        }
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        const value = e.target.value;
+        setConfirmPassword(value);
+        validateConfirmPassword(value);
+    };
+
+    const toggleNewPasswordVisibility = () => {
+        setShowNewPassword(!showNewPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
     const handleNext = (e) => {
         e.preventDefault();
         if (step === 1) {
@@ -353,10 +401,20 @@ function ResetPassword() {
             if (isCodeValid) {
                 console.log('Code verified:', code.join(''));
                 displayNotification('Code verified successfully!');
+                setStep(3);
             } else if (code.some((digit) => digit !== '')) {
                 displayNotification('Invalid code. Please try again.');
             } else {
                 displayNotification('Please enter the verification code.');
+            }
+        } else if (step === 3) {
+            if (isNewPasswordValid && isConfirmPasswordValid) {
+                console.log('Password reset successfully, New Password:', newPassword);
+                displayNotification('Password reset successfully!');
+            } else if (!isNewPasswordValid) {
+                displayNotification('Password: 6+ chars, 1 letter, 1 number');
+            } else if (!isConfirmPasswordValid) {
+                displayNotification('Passwords do not match.');
             }
         }
     };
@@ -424,7 +482,7 @@ function ResetPassword() {
                                 onChange={handleEmailChange}
                             />
                         </InputGroup>
-                    ) : (
+                    ) : step === 2 ? (
                         <div className="d-flex justify-content-center gap-2 mb-3">
                             {code.map((digit, index) => (
                                 <Form.Control
@@ -446,6 +504,61 @@ function ResetPassword() {
                                 />
                             ))}
                         </div>
+                    ) : (
+                        <>
+                            <InputGroup
+                                className="mb-3"
+                                style={{
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '5px',
+                                    borderBottom: isNewPasswordValid === false ? '2px solid red' : isNewPasswordValid === true ? '2px solid green' : 'none',
+                                }}
+                            >
+                                <InputGroup.Text className="bg-transparent border-0">
+                                    <FaLock color="#6c757d" />
+                                </InputGroup.Text>
+                                <Form.Control
+                                    type={showNewPassword ? 'text' : 'password'}
+                                    placeholder="New Password"
+                                    className="bg-transparent border-0 text-dark"
+                                    value={newPassword}
+                                    onChange={handleNewPasswordChange}
+                                />
+                                <InputGroup.Text
+                                    className="bg-transparent border-0"
+                                    onClick={toggleNewPasswordVisibility}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {showNewPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                                </InputGroup.Text>
+                            </InputGroup>
+                            <InputGroup
+                                className="mb-3"
+                                style={{
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '5px',
+                                    borderBottom: isConfirmPasswordValid === false ? '2px solid red' : isConfirmPasswordValid === true ? '2px solid green' : 'none',
+                                }}
+                            >
+                                <InputGroup.Text className="bg-transparent border-0">
+                                    <FaLock color="#6c757d" />
+                                </InputGroup.Text>
+                                <Form.Control
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    placeholder="Confirm Password"
+                                    className="bg-transparent border-0 text-dark"
+                                    value={confirmPassword}
+                                    onChange={handleConfirmPasswordChange}
+                                />
+                                <InputGroup.Text
+                                    className="bg-transparent border-0"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {showConfirmPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                                </InputGroup.Text>
+                            </InputGroup>
+                        </>
                     )}
                     <Button
                         type="submit"
@@ -458,7 +571,8 @@ function ResetPassword() {
                         }}
                         disabled={
                             (step === 1 && (email.length === 0 || !isEmailValid)) ||
-                            (step === 2 && (code.some((digit) => digit === '') || !isCodeValid))
+                            (step === 2 && (code.some((digit) => digit === '') || !isCodeValid)) ||
+                            (step === 3 && (newPassword.length === 0 || !isNewPasswordValid || confirmPassword.length === 0 || !isConfirmPasswordValid))
                         }
                     >
                         Next
