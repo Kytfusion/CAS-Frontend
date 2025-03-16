@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {useState, useEffect, useRef} from 'react';
 import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
-import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner} from 'react-icons/fa';
+import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner, FaUser, FaVenus, FaMars, FaImage} from 'react-icons/fa';
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -278,7 +278,7 @@ function Register() {
     const [showModal, setShowModal] = useState(false);
     const [currentMessage, setCurrentMessage] = useState('');
     const [showText, setShowText] = useState(false);
-    const [step, setStep] = useState(0); // Pasul 0 = formular inițial, 1-5 = pașii de completare a biografiei
+    const [step, setStep] = useState(0);
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isCodeValid, setIsCodeValid] = useState(null);
     const [timer, setTimer] = useState(60);
@@ -286,9 +286,13 @@ function Register() {
     const inputRefs = useRef([]);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [isFirstNameValid, setIsFirstNameValid] = useState(null);
+    const [isLastNameValid, setIsLastNameValid] = useState(null);
     const [birthDate, setBirthDate] = useState('');
     const [gender, setGender] = useState('');
     const [profileImage, setProfileImage] = useState(null);
+    const [profileImagePreview, setProfileImagePreview] = useState(null);
+    const fileInputRef = useRef(null);
 
     const validateEmail = (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -328,6 +332,26 @@ function Register() {
         return isValid;
     };
 
+    const validateFirstName = (value) => {
+        const nameRegex = /^[A-Za-z]+$/;
+        const isValid = nameRegex.test(value) && value.length >= 2;
+        setIsFirstNameValid(isValid);
+        if (!isValid && value) {
+            displayNotification('First name must contain only letters and be at least 2 characters long.');
+        }
+        return isValid;
+    };
+
+    const validateLastName = (value) => {
+        const nameRegex = /^[A-Za-z]+$/;
+        const isValid = nameRegex.test(value) && value.length >= 2;
+        setIsLastNameValid(isValid);
+        if (!isValid && value) {
+            displayNotification('Last name must contain only letters and be at least 2 characters long.');
+        }
+        return isValid;
+    };
+
     const handleEmailChange = (e) => {
         const value = e.target.value;
         setEmail(value);
@@ -347,6 +371,18 @@ function Register() {
         const value = e.target.value;
         setConfirmPassword(value);
         validateConfirmPassword(value);
+    };
+
+    const handleFirstNameChange = (e) => {
+        const value = e.target.value;
+        setFirstName(value);
+        validateFirstName(value);
+    };
+
+    const handleLastNameChange = (e) => {
+        const value = e.target.value;
+        setLastName(value);
+        validateLastName(value);
     };
 
     const togglePasswordVisibility = () => {
@@ -383,6 +419,22 @@ function Register() {
         setShowResendButton(false);
     };
 
+    const handleImageSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleImageContainerClick = () => {
+        fileInputRef.current.click();
+    };
+
     const handleRegister = (e) => {
         e.preventDefault();
         if (isEmailValid && isPasswordValid && isConfirmPasswordValid && agreePrivacy) {
@@ -409,11 +461,11 @@ function Register() {
                 displayNotification('Please enter the verification code.');
             }
         } else if (step === 2) {
-            if (firstName && lastName) {
+            if (isFirstNameValid && isLastNameValid) {
                 console.log('Name entered:', {firstName, lastName});
                 setStep(3);
             } else {
-                displayNotification('Please enter your first and last name.');
+                displayNotification('Please enter a valid first and last name.');
             }
         } else if (step === 3) {
             if (birthDate) {
@@ -797,22 +849,42 @@ function Register() {
                         </>
                     ) : step === 2 ? (
                         <>
-                            <InputGroup className="mb-3" style={{backgroundColor: '#f1f3f5', borderRadius: '5px'}}>
+                            <InputGroup
+                                className="mb-3"
+                                style={{
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '5px',
+                                    borderBottom: isFirstNameValid === false ? '2px solid red' : isFirstNameValid === true ? '2px solid green' : 'none',
+                                }}
+                            >
+                                <InputGroup.Text className="bg-transparent border-0">
+                                    <FaUser color="#6c757d"/>
+                                </InputGroup.Text>
                                 <Form.Control
                                     type="text"
                                     placeholder="First Name"
                                     className="bg-transparent border-0 text-dark"
                                     value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
+                                    onChange={handleFirstNameChange}
                                 />
                             </InputGroup>
-                            <InputGroup className="mb-3" style={{backgroundColor: '#f1f3f5', borderRadius: '5px'}}>
+                            <InputGroup
+                                className="mb-3"
+                                style={{
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '5px',
+                                    borderBottom: isLastNameValid === false ? '2px solid red' : isLastNameValid === true ? '2px solid green' : 'none',
+                                }}
+                            >
+                                <InputGroup.Text className="bg-transparent border-0">
+                                    <FaUser color="#6c757d"/>
+                                </InputGroup.Text>
                                 <Form.Control
                                     type="text"
                                     placeholder="Last Name"
                                     className="bg-transparent border-0 text-dark"
                                     value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
+                                    onChange={handleLastNameChange}
                                 />
                             </InputGroup>
                             <Button
@@ -824,7 +896,7 @@ function Register() {
                                     borderRadius: '5px',
                                     padding: '10px',
                                 }}
-                                disabled={!firstName || !lastName}
+                                disabled={!isFirstNameValid || !isLastNameValid}
                             >
                                 Next
                             </Button>
@@ -855,16 +927,32 @@ function Register() {
                         </>
                     ) : step === 4 ? (
                         <>
-                            <Form.Select
-                                className="mb-3"
-                                style={{backgroundColor: '#f1f3f5', borderRadius: '5px'}}
-                                value={gender}
-                                onChange={(e) => setGender(e.target.value)}
+                            <div
+                                className="mb-3 d-flex align-items-center p-2"
+                                style={{
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '5px',
+                                    border: gender === 'Female' ? '2px solid #28a745' : 'none',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setGender('Female')}
                             >
-                                <option value="">Select Gender</option>
-                                <option value="Male">Bărbat</option>
-                                <option value="Female">Femeie</option>
-                            </Form.Select>
+                                <FaVenus color="#6c757d" className="me-2"/>
+                                <span className="text-dark">Femeie</span>
+                            </div>
+                            <div
+                                className="mb-3 d-flex align-items-center p-2"
+                                style={{
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '5px',
+                                    border: gender === 'Male' ? '2px solid #28a745' : 'none',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setGender('Male')}
+                            >
+                                <FaMars color="#6c757d" className="me-2"/>
+                                <span className="text-dark">Bărbat</span>
+                            </div>
                             <Button
                                 type="submit"
                                 className="w-100 mt-3"
@@ -881,14 +969,36 @@ function Register() {
                         </>
                     ) : step === 5 ? (
                         <>
-                            <InputGroup className="mb-3" style={{backgroundColor: '#f1f3f5', borderRadius: '5px'}}>
-                                <Form.Control
-                                    type="file"
-                                    accept="image/*"
-                                    className="bg-transparent border-0 text-dark"
-                                    onChange={(e) => setProfileImage(e.target.files[0])}
-                                />
-                            </InputGroup>
+                            <div
+                                className="mb-3 d-flex justify-content-center align-items-center"
+                                style={{
+                                    width: '150px',
+                                    height: '150px',
+                                    backgroundColor: '#f1f3f5',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    margin: '0 auto',
+                                    overflow: 'hidden',
+                                }}
+                                onClick={handleImageContainerClick}
+                            >
+                                {profileImagePreview ? (
+                                    <img
+                                        src={profileImagePreview}
+                                        alt="Profile Preview"
+                                        style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                                    />
+                                ) : (
+                                    <FaImage color="#6c757d" size={50}/>
+                                )}
+                            </div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{display: 'none'}}
+                                ref={fileInputRef}
+                                onChange={handleImageSelect}
+                            />
                             <Button
                                 type="submit"
                                 className="w-100 mt-3"
