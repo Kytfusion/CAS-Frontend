@@ -1,64 +1,130 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { Container, Form, InputGroup, Button } from 'react-bootstrap';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import {useState, useEffect} from 'react';
+import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import {Container, Form, InputGroup, Button} from 'react-bootstrap';
+import {FaEnvelope, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa';
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isEmailValid, setIsEmailValid] = useState(null);
+    const [isPasswordValid, setIsPasswordValid] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
-    const handleSignIn = (e) => {
-        e.preventDefault();
-        console.log('Login Data:', { email, password });
+    const validateEmail = (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(value);
+        setIsEmailValid(isValid);
+        if (!isValid && value) {
+            setErrorMessage('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
+            setShowModal(true);
+        }
+        return isValid;
     };
 
+    const validatePassword = (value) => {
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+        const isValid = passwordRegex.test(value);
+        setIsPasswordValid(isValid);
+        if (!isValid && value) {
+            setErrorMessage('Password: 6+ chars, 1 letter, 1 number');
+            setShowModal(true);
+        }
+        return isValid;
+    };
+
+    const handleSignIn = (e) => {
+        e.preventDefault();
+        if (isEmailValid && isPasswordValid) {
+            console.log('Login Data:', {email, password});
+            setErrorMessage(`Logged in with: ${email}, ${password}`);
+            setShowModal(true);
+        }
+    };
+
+    const handleEmailChange = (e) => {
+        const value = e.target.value;
+        setEmail(value);
+        validateEmail(value);
+    };
+
+    const handlePasswordChange = (e) => {
+        const value = e.target.value;
+        setPassword(value);
+        validatePassword(value);
+    };
+
+    useEffect(() => {
+        if (showModal) {
+            const timer = setTimeout(() => {
+                setShowModal(false);
+                setErrorMessage('');
+            }, 3000); // Modalul dispare după 3 secunde
+            return () => clearTimeout(timer);
+        }
+    }, [showModal]);
+
     return (
-        <Container className="d-flex justify-content-center align-items-center min-vh-100">
+        <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
             <div className="text-center">
-                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
                     Welcome Back
                 </h2>
                 <p className="text-dark">Please enter your credentials to log in.</p>
                 <Form className="mt-3" onSubmit={handleSignIn}>
-                    <InputGroup className="mb-3" style={{ backgroundColor: '#f1f3f5', borderRadius: '5px' }}>
+                    <InputGroup
+                        className="mb-3"
+                        style={{
+                            backgroundColor: '#f1f3f5',
+                            borderRadius: '5px',
+                            borderBottom: isEmailValid === false ? '2px solid red' : isEmailValid === true ? '2px solid green' : 'none',
+                        }}
+                    >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaEnvelope color="#6c757d" />
+                            <FaEnvelope color="#6c757d"/>
                         </InputGroup.Text>
                         <Form.Control
                             type="email"
                             placeholder="Email"
                             className="bg-transparent border-0 text-dark"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={handleEmailChange}
                         />
                     </InputGroup>
-                    <InputGroup className="mb-3" style={{ backgroundColor: '#f1f3f5', borderRadius: '5px' }}>
+                    <InputGroup
+                        className="mb-3"
+                        style={{
+                            backgroundColor: '#f1f3f5',
+                            borderRadius: '5px',
+                            borderBottom: isPasswordValid === false ? '2px solid red' : isPasswordValid === true ? '2px solid green' : 'none',
+                        }}
+                    >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaLock color="#6c757d" />
+                            <FaLock color="#6c757d"/>
                         </InputGroup.Text>
                         <Form.Control
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
                             className="bg-transparent border-0 text-dark"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={handlePasswordChange}
                         />
                         <InputGroup.Text
                             className="bg-transparent border-0"
                             onClick={togglePasswordVisibility}
-                            style={{ cursor: 'pointer' }}
+                            style={{cursor: 'pointer'}}
                         >
-                            {showPassword ? <FaEyeSlash color="#6c757d" /> : <FaEye color="#6c757d" />}
+                            {showPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
                         </InputGroup.Text>
                     </InputGroup>
-                    <div className="text-end mt-2" style={{ width: '100%' }}>
+                    <div className="text-end mt-2" style={{width: '100%'}}>
                         <Link to="/reset-password" className="text-dark">Reset: Password</Link>
                     </div>
                     <Button
@@ -70,14 +136,48 @@ function Login() {
                             borderRadius: '5px',
                             padding: '10px',
                         }}
+                        disabled={!isEmailValid || !isPasswordValid}
                     >
                         Sign In
                     </Button>
+                    <p className="text-start mt-3" style={{width: '100%'}}>
+                        Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link>
+                    </p>
                 </Form>
-                <p className="text-start mt-3" style={{ width: '100%' }}>
-                    Don't have an account? <Link to="/register" className="text-dark">Sign Up</Link>
-                </p>
             </div>
+
+            {showModal && (
+                <div
+                    className="position-fixed"
+                    style={{
+                        top: '10px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: '#212529',
+                        color: '#fff',
+                        padding: '8px 20px',
+                        borderRadius: '20px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                        zIndex: 1000,
+                        animation: 'slideDown 0.5s ease-in-out forwards, slideUp 0.5s ease-in-out 2.5s forwards',
+                    }}
+                >
+                    <p style={{margin: 0, fontSize: '14px'}}>{errorMessage}</p>
+                </div>
+            )}
+
+            <style>
+                {`
+                    @keyframes slideDown {
+                        0% { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                        100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+                        100% { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                    }
+                `}
+            </style>
         </Container>
     );
 }
@@ -86,11 +186,11 @@ function Register() {
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100">
             <div className="text-center">
-                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
                     Create an Account
                 </h2>
                 <p className="text-dark">Please create a new account here.</p>
-                <p className="text-start mt-3" style={{ width: '100%' }}>
+                <p className="text-start mt-3" style={{width: '100%'}}>
                     Already have an account? <Link to="/login" className="text-dark">Sign In</Link>
                 </p>
             </div>
@@ -102,11 +202,11 @@ function ResetPassword() {
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100">
             <div className="text-center">
-                <h2 className="text-dark mb-3" style={{ fontSize: '2rem' }}>
+                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
                     Reset Password
                 </h2>
                 <p className="text-dark">Please follow the instructions to reset your password.</p>
-                <div className="text-end mt-3" style={{ width: '100%' }}>
+                <div className="text-end mt-3" style={{width: '100%'}}>
                     <Link to="/login" className="text-dark">Back to Login</Link>
                 </div>
             </div>
@@ -119,10 +219,10 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/" element={<Login/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/register" element={<Register/>}/>
+                    <Route path="/reset-password" element={<ResetPassword/>}/>
                 </Routes>
             </div>
         </Router>
