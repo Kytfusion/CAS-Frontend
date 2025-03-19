@@ -1,8 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Container, Form, InputGroup, Button } from 'react-bootstrap';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner, FaUser, FaVenus, FaMars, FaImage } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaVenus, FaMars, FaImage } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { NotificationContext } from '../App';
 
 function Register() {
     const [email, setEmail] = useState('');
@@ -14,9 +15,6 @@ function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreePrivacy, setAgreePrivacy] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [currentMessage, setCurrentMessage] = useState('');
-    const [showText, setShowText] = useState(false);
     const [step, setStep] = useState(0);
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isCodeValid, setIsCodeValid] = useState(null);
@@ -33,12 +31,14 @@ function Register() {
     const [profileImagePreview, setProfileImagePreview] = useState(null);
     const fileInputRef = useRef(null);
 
+    const { showNotification } = useContext(NotificationContext); // Use the context
+
     const validateEmail = (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isValid = emailRegex.test(value);
         setIsEmailValid(isValid);
         if (!isValid && value) {
-            displayNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
+            showNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
         }
         return isValid;
     };
@@ -48,7 +48,7 @@ function Register() {
         const isValid = passwordRegex.test(value);
         setIsPasswordValid(isValid);
         if (!isValid && value) {
-            displayNotification('Password: 6+ chars, 1 letter, 1 number');
+            showNotification('Password: 6+ chars, 1 letter, 1 number');
         }
         return isValid;
     };
@@ -57,7 +57,7 @@ function Register() {
         const isValid = value === password;
         setIsConfirmPasswordValid(isValid);
         if (!isValid && value) {
-            displayNotification('Passwords do not match.');
+            showNotification('Passwords do not match.');
         }
         return isValid;
     };
@@ -66,7 +66,7 @@ function Register() {
         const isValid = codeArray.every((digit) => /^\d$/.test(digit));
         setIsCodeValid(isValid);
         if (!isValid && codeArray.some((digit) => digit !== '')) {
-            displayNotification('Code must contain exactly 6 digits.');
+            showNotification('Code must contain exactly 6 digits.');
         }
         return isValid;
     };
@@ -76,7 +76,7 @@ function Register() {
         const isValid = nameRegex.test(value) && value.length >= 2;
         setIsFirstNameValid(isValid);
         if (!isValid && value) {
-            displayNotification('First name must contain only letters and be at least 2 characters long.');
+            showNotification('First name must contain only letters and be at least 2 characters long.');
         }
         return isValid;
     };
@@ -86,7 +86,7 @@ function Register() {
         const isValid = nameRegex.test(value) && value.length >= 2;
         setIsLastNameValid(isValid);
         if (!isValid && value) {
-            displayNotification('Last name must contain only letters and be at least 2 characters long.');
+            showNotification('Last name must contain only letters and be at least 2 characters long.');
         }
         return isValid;
     };
@@ -153,7 +153,7 @@ function Register() {
 
     const handleResendCode = () => {
         console.log('Resending code to:', email);
-        displayNotification(`Verification code resent to ${email}`);
+        showNotification(`Verification code resent to ${email}`);
         setTimer(60);
         setShowResendButton(false);
     };
@@ -178,12 +178,12 @@ function Register() {
         e.preventDefault();
         if (isEmailValid && isPasswordValid && isConfirmPasswordValid && agreePrivacy) {
             console.log('Registration Data:', { email, password });
-            displayNotification(`Verification code sent to ${email}`);
+            showNotification(`Verification code sent to ${email}`);
             setStep(1);
             setTimer(60);
             setShowResendButton(false);
         } else if (!agreePrivacy) {
-            displayNotification('Please agree to the Privacy Policy.');
+            showNotification('Please agree to the Privacy Policy.');
         }
     };
 
@@ -192,40 +192,40 @@ function Register() {
         if (step === 1) {
             if (isCodeValid) {
                 console.log('Code verified:', code.join(''));
-                displayNotification('Code verified successfully!');
+                showNotification('Code verified successfully!');
                 setStep(2);
             } else if (code.some((digit) => digit !== '')) {
-                displayNotification('Invalid code. Please try again.');
+                showNotification('Invalid code. Please try again.');
             } else {
-                displayNotification('Please enter the verification code.');
+                showNotification('Please enter the verification code.');
             }
         } else if (step === 2) {
             if (isFirstNameValid && isLastNameValid) {
                 console.log('Name entered:', { firstName, lastName });
                 setStep(3);
             } else {
-                displayNotification('Please enter a valid first and last name.');
+                showNotification('Please enter a valid first and last name.');
             }
         } else if (step === 3) {
             if (birthDate) {
                 console.log('Birth date entered:', birthDate);
                 setStep(4);
             } else {
-                displayNotification('Please select your birth date.');
+                showNotification('Please select your birth date.');
             }
         } else if (step === 4) {
             if (gender) {
                 console.log('Gender selected:', gender);
                 setStep(5);
             } else {
-                displayNotification('Please select your gender.');
+                showNotification('Please select your gender.');
             }
         } else if (step === 5) {
             if (profileImage) {
                 console.log('Profile image selected:', profileImage.name);
-                displayNotification('Profile setup completed!');
+                showNotification('Profile setup completed!');
             } else {
-                displayNotification('Please select a profile image.');
+                showNotification('Please select a profile image.');
             }
         }
     };
@@ -235,41 +235,6 @@ function Register() {
             setStep(step - 1);
         }
     };
-
-    const displayNotification = (message) => {
-        if (showModal) {
-            setShowModal(false);
-            setShowText(false);
-            setTimeout(() => {
-                setCurrentMessage(message);
-                setShowModal(true);
-            }, 500);
-        } else {
-            setCurrentMessage(message);
-            setShowModal(true);
-        }
-    };
-
-    useEffect(() => {
-        if (showModal) {
-            const textTimer = setTimeout(() => {
-                setShowText(true);
-            }, 1000);
-
-            const closeTimer = setTimeout(() => {
-                setShowText(false);
-                setTimeout(() => {
-                    setShowModal(false);
-                    setCurrentMessage('');
-                }, 500);
-            }, 3000);
-
-            return () => {
-                clearTimeout(textTimer);
-                clearTimeout(closeTimer);
-            };
-        }
-    }, [showModal]);
 
     useEffect(() => {
         if (step === 1 && timer > 0 && !showResendButton) {
@@ -426,30 +391,6 @@ function Register() {
                     </div>
                 </Form>
             </div>
-
-            {showModal && (
-                <div className="position-fixed" style={{ top: '10px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#212529', color: '#fff', padding: '0 20px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', zIndex: 1000, animation: 'openDynamicIsland 1s ease-in-out forwards, closeDynamicIsland 1s ease-in-out 3s forwards' }}>
-                    <FaSpinner style={{ position: 'absolute', animation: 'spin 1s linear infinite', opacity: showText ? 0 : 1, transition: 'opacity 0.3s ease' }} />
-                    <p style={{ margin: 0, fontSize: '14px', opacity: showText ? 1 : 0, transition: 'opacity 0.3s ease', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }}>{currentMessage}</p>
-                </div>
-            )}
-
-            <style>{`
-                @keyframes openDynamicIsland {
-                    0% { transform: translateX(-50%) translateY(-100%); width: 40px; border-radius: 50%; opacity: 0; }
-                    50% { transform: translateX(-50%) translateY(0); width: 40px; border-radius: 50%; opacity: 1; }
-                    100% { transform: translateX(-50%) translateY(0); width: 300px; border-radius: 20px; opacity: 1; }
-                }
-                @keyframes closeDynamicIsland {
-                    0% { transform: translateX(-50%) translateY(0); width: 300px; border-radius: 20px; opacity: 1; }
-                    50% { transform: translateX(-50%) translateY(0); width: 40px; border-radius: 50%; opacity: 1; }
-                    100% { transform: translateX(-50%) translateY(-100%); width: 40px; border-radius: 50%; opacity: 0; }
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `}</style>
         </Container>
     );
 }
