@@ -809,18 +809,6 @@ function Register() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div 
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: 0,
-                                            right: 0,
-                                            height: '40px',
-                                            transform: 'translateY(-50%)',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                            pointerEvents: 'none'
-                                        }}
-                                    />
                                 </div>
                                 <div
                                     style={{
@@ -879,18 +867,6 @@ function Register() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div 
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: 0,
-                                            right: 0,
-                                            height: '40px',
-                                            transform: 'translateY(-50%)',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                            pointerEvents: 'none'
-                                        }}
-                                    />
                                 </div>
                                 <div
                                     style={{
@@ -949,18 +925,6 @@ function Register() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div 
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: 0,
-                                            right: 0,
-                                            height: '40px',
-                                            transform: 'translateY(-50%)',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                            pointerEvents: 'none'
-                                        }}
-                                    />
                                 </div>
                             </div>
                             <Button
@@ -1586,8 +1550,8 @@ function App() {
                     <Route path="/reset-password" element={<ResetPassword/>}/>
                     <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
                 </Routes>
-                </div>
-            </Router>
+            </div>
+        </Router>
     );
 }
 
