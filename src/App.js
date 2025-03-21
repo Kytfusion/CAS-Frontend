@@ -753,23 +753,220 @@ function Register() {
                         </>
                     ) : step === 3 ? (
                         <>
-                            <InputGroup className="mb-3" style={{backgroundColor: styles.colors.light, borderRadius: styles.input.borderRadius}}>
-                                <Form.Control
-                                    type="date"
-                                    className="bg-transparent border-0 text-dark"
-                                    value={birthDate}
-                                    onChange={(e) => setBirthDate(e.target.value)}
-                                />
-                            </InputGroup>
+                            <div className="d-flex gap-2 mb-3">
+                                <div
+                                    style={{
+                                        backgroundColor: styles.colors.dark,
+                                        borderRadius: styles.input.borderRadius,
+                                        border: 'none',
+                                        flex: '1',
+                                        height: '200px',
+                                        overflowY: 'auto',
+                                        scrollBehavior: 'smooth',
+                                        position: 'relative',
+                                        '&::-webkit-scrollbar': {
+                                            display: 'none'
+                                        },
+                                        msOverflowStyle: 'none',
+                                        scrollbarWidth: 'none'
+                                    }}
+                                    onScroll={(e) => {
+                                        const container = e.currentTarget;
+                                        const scrollTop = container.scrollTop;
+                                        const itemHeight = 40;
+                                        const selectedIndex = Math.round(scrollTop / itemHeight);
+                                        const day = selectedIndex + 1;
+                                        if (day >= 1 && day <= 31) {
+                                            const [year, month] = birthDate.split('-');
+                                            setBirthDate(`${year || new Date().getFullYear()}-${month || '01'}-${day.toString().padStart(2, '0')}`);
+                                        }
+                                    }}
+                                >
+                                    <div style={{ padding: '80px 0' }}>
+                                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                                            <div
+                                                key={day}
+                                                onClick={(e) => {
+                                                    const [year, month] = birthDate.split('-');
+                                                    setBirthDate(`${year || new Date().getFullYear()}-${month || '01'}-${day.toString().padStart(2, '0')}`);
+                                                    const container = e.currentTarget.parentElement.parentElement;
+                                                    const itemHeight = 40;
+                                                    container.scrollTop = (day - 1) * itemHeight;
+                                                }}
+                                                style={{
+                                                    height: '40px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    color: birthDate.split('-')[2] === day.toString().padStart(2, '0') ? '#fff' : '#666',
+                                                    fontSize: birthDate.split('-')[2] === day.toString().padStart(2, '0') ? '16px' : '14px',
+                                                    transition: 'all 0.3s ease',
+                                                    backgroundColor: birthDate.split('-')[2] === day.toString().padStart(2, '0') ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                                                }}
+                                            >
+                                                {day}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div 
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: 0,
+                                            right: 0,
+                                            height: '40px',
+                                            transform: 'translateY(-50%)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        backgroundColor: styles.colors.dark,
+                                        borderRadius: styles.input.borderRadius,
+                                        border: 'none',
+                                        flex: '1',
+                                        height: '200px',
+                                        overflowY: 'auto',
+                                        scrollBehavior: 'smooth',
+                                        position: 'relative',
+                                        '&::-webkit-scrollbar': {
+                                            display: 'none'
+                                        },
+                                        msOverflowStyle: 'none',
+                                        scrollbarWidth: 'none'
+                                    }}
+                                    onScroll={(e) => {
+                                        const container = e.currentTarget;
+                                        const scrollTop = container.scrollTop;
+                                        const itemHeight = 40;
+                                        const selectedIndex = Math.round(scrollTop / itemHeight);
+                                        if (selectedIndex >= 0 && selectedIndex < 12) {
+                                            const [year, _, day] = birthDate.split('-');
+                                            setBirthDate(`${year || new Date().getFullYear()}-${(selectedIndex + 1).toString().padStart(2, '0')}-${day || '01'}`);
+                                        }
+                                    }}
+                                >
+                                    <div style={{ padding: '80px 0' }}>
+                                        {[
+                                            'January', 'February', 'March', 'April', 'May', 'June',
+                                            'July', 'August', 'September', 'October', 'November', 'December'
+                                        ].map((month, index) => (
+                                            <div
+                                                key={month}
+                                                onClick={(e) => {
+                                                    const [year, _, day] = birthDate.split('-');
+                                                    setBirthDate(`${year || new Date().getFullYear()}-${(index + 1).toString().padStart(2, '0')}-${day || '01'}`);
+                                                    const container = e.currentTarget.parentElement.parentElement;
+                                                    const itemHeight = 40;
+                                                    container.scrollTop = index * itemHeight;
+                                                }}
+                                                style={{
+                                                    height: '40px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    color: birthDate.split('-')[1] === (index + 1).toString().padStart(2, '0') ? '#fff' : '#666',
+                                                    fontSize: birthDate.split('-')[1] === (index + 1).toString().padStart(2, '0') ? '16px' : '14px',
+                                                    transition: 'all 0.3s ease',
+                                                    backgroundColor: birthDate.split('-')[1] === (index + 1).toString().padStart(2, '0') ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                                                }}
+                                            >
+                                                {month}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div 
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: 0,
+                                            right: 0,
+                                            height: '40px',
+                                            transform: 'translateY(-50%)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        backgroundColor: styles.colors.dark,
+                                        borderRadius: styles.input.borderRadius,
+                                        border: 'none',
+                                        flex: '1',
+                                        height: '200px',
+                                        overflowY: 'auto',
+                                        scrollBehavior: 'smooth',
+                                        position: 'relative',
+                                        '&::-webkit-scrollbar': {
+                                            display: 'none'
+                                        },
+                                        msOverflowStyle: 'none',
+                                        scrollbarWidth: 'none'
+                                    }}
+                                    onScroll={(e) => {
+                                        const container = e.currentTarget;
+                                        const scrollTop = container.scrollTop;
+                                        const itemHeight = 40;
+                                        const selectedIndex = Math.round(scrollTop / itemHeight);
+                                        const year = new Date().getFullYear() - selectedIndex;
+                                        const [_, month, day] = birthDate.split('-');
+                                        setBirthDate(`${year}-${month || '01'}-${day || '01'}`);
+                                    }}
+                                >
+                                    <div style={{ padding: '80px 0' }}>
+                                        {Array.from(
+                                            { length: 100 },
+                                            (_, i) => new Date().getFullYear() - i
+                                        ).map((year) => (
+                                            <div
+                                                key={year}
+                                                onClick={(e) => {
+                                                    const [_, month, day] = birthDate.split('-');
+                                                    setBirthDate(`${year}-${month || '01'}-${day || '01'}`);
+                                                    const container = e.currentTarget.parentElement.parentElement;
+                                                    const itemHeight = 40;
+                                                    const currentYear = new Date().getFullYear();
+                                                    container.scrollTop = (currentYear - year) * itemHeight;
+                                                }}
+                                                style={{
+                                                    height: '40px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    color: birthDate.split('-')[0] === year.toString() ? '#fff' : '#666',
+                                                    fontSize: birthDate.split('-')[0] === year.toString() ? '16px' : '14px',
+                                                    transition: 'all 0.3s ease',
+                                                    backgroundColor: birthDate.split('-')[0] === year.toString() ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                                                }}
+                                            >
+                                                {year}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div 
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: 0,
+                                            right: 0,
+                                            height: '40px',
+                                            transform: 'translateY(-50%)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
+                                </div>
+                            </div>
                             <Button
                                 type="submit"
                                 className="w-100 mt-3"
-                                style={{
-                                    backgroundColor: styles.colors.primary,
-                                    border: 'none',
-                                    borderRadius: styles.input.borderRadius,
-                                    padding: styles.input.padding,
-                                }}
+                                style={styles.button.primary}
                                 disabled={!birthDate}
                             >
                                 Next
@@ -1389,8 +1586,8 @@ function App() {
                     <Route path="/reset-password" element={<ResetPassword/>}/>
                     <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
                 </Routes>
-            </div>
-        </Router>
+                </div>
+            </Router>
     );
 }
 
