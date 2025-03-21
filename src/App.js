@@ -5,15 +5,48 @@ import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
 import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner, FaUser, FaVenus, FaMars, FaImage} from 'react-icons/fa';
 
+const styles = {
+    colors: {
+        primary: '#212529',
+        secondary: '#6c757d',
+        success: '#28a745',
+        danger: '#dc3545',
+        light: '#f1f3f5',
+        dark: '#212529',
+    },
+    fonts: {
+        heading: {
+            large: '2.5rem',
+            medium: '2rem',
+            small: '1.1rem'
+        },
+        text: {
+            normal: '1rem',
+            small: '0.875rem'
+        }
+    },
+    spacing: {
+        section: '2rem',
+        element: '1rem',
+        small: '0.5rem'
+    },
+    input: {
+        height: '40px',
+        borderRadius: '5px',
+        padding: '12px'
+    },
+    container: {
+        maxWidth: '400px',
+        wide: '600px'
+    }
+};
+
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [currentMessage, setCurrentMessage] = useState('');
-    const [showText, setShowText] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -23,9 +56,6 @@ function Login() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isValid = emailRegex.test(value);
         setIsEmailValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
-        }
         return isValid;
     };
 
@@ -33,9 +63,6 @@ function Login() {
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
         const isValid = passwordRegex.test(value);
         setIsPasswordValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Password: 6+ chars, 1 letter, 1 number');
-        }
         return isValid;
     };
 
@@ -43,21 +70,6 @@ function Login() {
         e.preventDefault();
         if (isEmailValid && isPasswordValid) {
             console.log('Login Data:', {email, password});
-            displayNotification(`Logged in with: ${email}, ${password}`);
-        }
-    };
-
-    const displayNotification = (message) => {
-        if (showModal) {
-            setShowModal(false);
-            setShowText(false);
-            setTimeout(() => {
-                setCurrentMessage(message);
-                setShowModal(true);
-            }, 500);
-        } else {
-            setCurrentMessage(message);
-            setShowModal(true);
         }
     };
 
@@ -73,31 +85,10 @@ function Login() {
         validatePassword(value);
     };
 
-    useEffect(() => {
-        if (showModal) {
-            const textTimer = setTimeout(() => {
-                setShowText(true);
-            }, 1000);
-
-            const closeTimer = setTimeout(() => {
-                setShowText(false);
-                setTimeout(() => {
-                    setShowModal(false);
-                    setCurrentMessage('');
-                }, 500);
-            }, 3000);
-
-            return () => {
-                clearTimeout(textTimer);
-                clearTimeout(closeTimer);
-            };
-        }
-    }, [showModal]);
-
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{maxWidth: '400px'}}>
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+            <div className="text-center w-100" style={{maxWidth: styles.container.maxWidth}}>
+                <h2 className="text-dark mb-3" style={{fontSize: styles.fonts.heading.medium}}>
                     Welcome Back
                 </h2>
                 <p className="text-dark">Please enter your credentials to log in.</p>
@@ -105,13 +96,13 @@ function Login() {
                     <InputGroup
                         className="mb-3"
                         style={{
-                            backgroundColor: '#f1f3f5',
-                            borderRadius: '5px',
+                            backgroundColor: styles.colors.light,
+                            borderRadius: styles.input.borderRadius,
                             borderBottom: isEmailValid === false ? '2px solid red' : isEmailValid === true ? '2px solid green' : 'none',
                         }}
                     >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaEnvelope color="#6c757d"/>
+                            <FaEnvelope color={styles.colors.secondary}/>
                         </InputGroup.Text>
                         <Form.Control
                             type="email"
@@ -124,13 +115,13 @@ function Login() {
                     <InputGroup
                         className="mb-3"
                         style={{
-                            backgroundColor: '#f1f3f5',
-                            borderRadius: '5px',
+                            backgroundColor: styles.colors.light,
+                            borderRadius: styles.input.borderRadius,
                             borderBottom: isPasswordValid === false ? '2px solid red' : isPasswordValid === true ? '2px solid green' : 'none',
                         }}
                     >
                         <InputGroup.Text className="bg-transparent border-0">
-                            <FaLock color="#6c757d"/>
+                            <FaLock color={styles.colors.secondary}/>
                         </InputGroup.Text>
                         <Form.Control
                             type={showPassword ? 'text' : 'password'}
@@ -144,7 +135,7 @@ function Login() {
                             onClick={togglePasswordVisibility}
                             style={{cursor: 'pointer'}}
                         >
-                            {showPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
+                            {showPassword ? <FaEyeSlash color={styles.colors.secondary}/> : <FaEye color={styles.colors.secondary}/>}
                         </InputGroup.Text>
                     </InputGroup>
                     <div className="text-end mt-2" style={{width: '100%'}}>
@@ -154,10 +145,10 @@ function Login() {
                         type="submit"
                         className="w-100 mt-3"
                         style={{
-                            backgroundColor: '#212529',
+                            backgroundColor: styles.colors.primary,
                             border: 'none',
-                            borderRadius: '5px',
-                            padding: '10px',
+                            borderRadius: styles.input.borderRadius,
+                            padding: styles.input.padding,
                         }}
                         disabled={!isEmailValid || !isPasswordValid}
                     >
@@ -168,99 +159,6 @@ function Login() {
                     </p>
                 </Form>
             </div>
-
-            {showModal && (
-                <div
-                    className="position-fixed"
-                    style={{
-                        top: '10px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        backgroundColor: '#212529',
-                        color: '#fff',
-                        padding: '0 20px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                        zIndex: 1000,
-                        animation: 'openDynamicIsland 1s ease-in-out forwards, closeDynamicIsland 1s ease-in-out 3s forwards',
-                    }}
-                >
-                    <FaSpinner
-                        style={{
-                            position: 'absolute',
-                            animation: 'spin 1s linear infinite',
-                            opacity: showText ? 0 : 1,
-                            transition: 'opacity 0.3s ease',
-                        }}
-                    />
-                    <p
-                        style={{
-                            margin: 0,
-                            fontSize: '14px',
-                            opacity: showText ? 1 : 0,
-                            transition: 'opacity 0.3s ease',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '260px',
-                        }}
-                    >
-                        {currentMessage}
-                    </p>
-                </div>
-            )}
-
-            <style>
-                {`
-                    @keyframes openDynamicIsland {
-                        0% {
-                            transform: translateX(-50%) translateY(-100%);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 0;
-                        }
-                        50% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 300px;
-                            border-radius: 20px;
-                            opacity: 1;
-                        }
-                    }
-                    @keyframes closeDynamicIsland {
-                        0% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 300px;
-                            border-radius: 20px;
-                            opacity: 1;
-                        }
-                        50% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateX(-50%) translateY(-100%);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 0;
-                        }
-                    }
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}
-            </style>
         </Container>
     );
 }
@@ -275,9 +173,6 @@ function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreePrivacy, setAgreePrivacy] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [currentMessage, setCurrentMessage] = useState('');
-    const [showText, setShowText] = useState(false);
     const [step, setStep] = useState(0);
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isCodeValid, setIsCodeValid] = useState(null);
@@ -298,9 +193,6 @@ function Register() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isValid = emailRegex.test(value);
         setIsEmailValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
-        }
         return isValid;
     };
 
@@ -308,27 +200,18 @@ function Register() {
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
         const isValid = passwordRegex.test(value);
         setIsPasswordValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Password: 6+ chars, 1 letter, 1 number');
-        }
         return isValid;
     };
 
     const validateConfirmPassword = (value) => {
         const isValid = value === password;
         setIsConfirmPasswordValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Passwords do not match.');
-        }
         return isValid;
     };
 
     const validateCode = (codeArray) => {
         const isValid = codeArray.every((digit) => /^\d$/.test(digit));
         setIsCodeValid(isValid);
-        if (!isValid && codeArray.some((digit) => digit !== '')) {
-            displayNotification('Code must contain exactly 6 digits.');
-        }
         return isValid;
     };
 
@@ -336,9 +219,6 @@ function Register() {
         const nameRegex = /^[A-Za-z]+$/;
         const isValid = nameRegex.test(value) && value.length >= 2;
         setIsFirstNameValid(isValid);
-        if (!isValid && value) {
-            displayNotification('First name must contain only letters and be at least 2 characters long.');
-        }
         return isValid;
     };
 
@@ -346,9 +226,6 @@ function Register() {
         const nameRegex = /^[A-Za-z]+$/;
         const isValid = nameRegex.test(value) && value.length >= 2;
         setIsLastNameValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Last name must contain only letters and be at least 2 characters long.');
-        }
         return isValid;
     };
 
@@ -371,18 +248,6 @@ function Register() {
         const value = e.target.value;
         setConfirmPassword(value);
         validateConfirmPassword(value);
-    };
-
-    const handleFirstNameChange = (e) => {
-        const value = e.target.value;
-        setFirstName(value);
-        validateFirstName(value);
-    };
-
-    const handleLastNameChange = (e) => {
-        const value = e.target.value;
-        setLastName(value);
-        validateLastName(value);
     };
 
     const togglePasswordVisibility = () => {
@@ -414,7 +279,6 @@ function Register() {
 
     const handleResendCode = () => {
         console.log('Resending code to:', email);
-        displayNotification(`Verification code resent to ${email}`);
         setTimer(60);
         setShowResendButton(false);
     };
@@ -435,16 +299,25 @@ function Register() {
         fileInputRef.current.click();
     };
 
+    const handleFirstNameChange = (e) => {
+        const value = e.target.value;
+        setFirstName(value);
+        validateFirstName(value);
+    };
+
+    const handleLastNameChange = (e) => {
+        const value = e.target.value;
+        setLastName(value);
+        validateLastName(value);
+    };
+
     const handleRegister = (e) => {
         e.preventDefault();
         if (isEmailValid && isPasswordValid && isConfirmPasswordValid && agreePrivacy) {
             console.log('Registration Data:', {email, password});
-            displayNotification(`Verification code sent to ${email}`);
             setStep(1);
             setTimer(60);
             setShowResendButton(false);
-        } else if (!agreePrivacy) {
-            displayNotification('Please agree to the Privacy Policy.');
         }
     };
 
@@ -453,40 +326,26 @@ function Register() {
         if (step === 1) {
             if (isCodeValid) {
                 console.log('Code verified:', code.join(''));
-                displayNotification('Code verified successfully!');
                 setStep(2);
-            } else if (code.some((digit) => digit !== '')) {
-                displayNotification('Invalid code. Please try again.');
-            } else {
-                displayNotification('Please enter the verification code.');
             }
         } else if (step === 2) {
             if (isFirstNameValid && isLastNameValid) {
                 console.log('Name entered:', {firstName, lastName});
                 setStep(3);
-            } else {
-                displayNotification('Please enter a valid first and last name.');
             }
         } else if (step === 3) {
             if (birthDate) {
                 console.log('Birth date entered:', birthDate);
                 setStep(4);
-            } else {
-                displayNotification('Please select your birth date.');
             }
         } else if (step === 4) {
             if (gender) {
                 console.log('Gender selected:', gender);
                 setStep(5);
-            } else {
-                displayNotification('Please select your gender.');
             }
         } else if (step === 5) {
             if (profileImage) {
                 console.log('Profile image selected:', profileImage.name);
-                displayNotification('Profile setup completed!');
-            } else {
-                displayNotification('Please select a profile image.');
             }
         }
     };
@@ -496,41 +355,6 @@ function Register() {
             setStep(step - 1);
         }
     };
-
-    const displayNotification = (message) => {
-        if (showModal) {
-            setShowModal(false);
-            setShowText(false);
-            setTimeout(() => {
-                setCurrentMessage(message);
-                setShowModal(true);
-            }, 500);
-        } else {
-            setCurrentMessage(message);
-            setShowModal(true);
-        }
-    };
-
-    useEffect(() => {
-        if (showModal) {
-            const textTimer = setTimeout(() => {
-                setShowText(true);
-            }, 1000);
-
-            const closeTimer = setTimeout(() => {
-                setShowText(false);
-                setTimeout(() => {
-                    setShowModal(false);
-                    setCurrentMessage('');
-                }, 500);
-            }, 3000);
-
-            return () => {
-                clearTimeout(textTimer);
-                clearTimeout(closeTimer);
-            };
-        }
-    }, [showModal]);
 
     useEffect(() => {
         if (step === 1 && timer > 0 && !showResendButton) {
@@ -569,8 +393,8 @@ function Register() {
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{maxWidth: '400px'}}>
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+            <div className="text-center w-100" style={{maxWidth: styles.container.maxWidth}}>
+                <h2 className="text-dark mb-3" style={{fontSize: styles.fonts.heading.medium}}>
                     Create an Account
                 </h2>
                 <p className="text-dark mb-4">{getStepInstruction()}</p>
@@ -583,7 +407,7 @@ function Register() {
                             left: '16px',
                             right: '16px',
                             height: '2px',
-                            backgroundColor: '#6c757d',
+                            backgroundColor: styles.colors.secondary,
                             zIndex: 0
                         }}></div>
                         <div
@@ -593,7 +417,7 @@ function Register() {
                                 left: `${16 + (step - 1) * (100 / 5)}px`,
                                 width: `${(step - 1) * (100 / 5)}px`,
                                 height: '2px',
-                                backgroundColor: '#28a745',
+                                backgroundColor: styles.colors.success,
                                 zIndex: 1,
                                 transition: 'width 0.3s ease, left 0.3s ease',
                             }}
@@ -603,7 +427,7 @@ function Register() {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
-                                backgroundColor: step >= 1 ? '#28a745' : '#6c757d',
+                                backgroundColor: step >= 1 ? styles.colors.success : styles.colors.secondary,
                                 color: '#fff',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -619,7 +443,7 @@ function Register() {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
-                                backgroundColor: step >= 2 ? '#28a745' : '#6c757d',
+                                backgroundColor: step >= 2 ? styles.colors.success : styles.colors.secondary,
                                 color: '#fff',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -635,7 +459,7 @@ function Register() {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
-                                backgroundColor: step >= 3 ? '#28a745' : '#6c757d',
+                                backgroundColor: step >= 3 ? styles.colors.success : styles.colors.secondary,
                                 color: '#fff',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -651,7 +475,7 @@ function Register() {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
-                                backgroundColor: step >= 4 ? '#28a745' : '#6c757d',
+                                backgroundColor: step >= 4 ? styles.colors.success : styles.colors.secondary,
                                 color: '#fff',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -667,7 +491,7 @@ function Register() {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
-                                backgroundColor: step >= 5 ? '#28a745' : '#6c757d',
+                                backgroundColor: step >= 5 ? styles.colors.success : styles.colors.secondary,
                                 color: '#fff',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -697,13 +521,13 @@ function Register() {
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isEmailValid === false ? '2px solid red' : isEmailValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaEnvelope color="#6c757d"/>
+                                    <FaEnvelope color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="email"
@@ -716,13 +540,13 @@ function Register() {
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isPasswordValid === false ? '2px solid red' : isPasswordValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaLock color="#6c757d"/>
+                                    <FaLock color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showPassword ? 'text' : 'password'}
@@ -736,19 +560,19 @@ function Register() {
                                     onClick={togglePasswordVisibility}
                                     style={{cursor: 'pointer'}}
                                 >
-                                    {showPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
+                                    {showPassword ? <FaEyeSlash color={styles.colors.secondary}/> : <FaEye color={styles.colors.secondary}/>}
                                 </InputGroup.Text>
                             </InputGroup>
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isConfirmPasswordValid === false ? '2px solid red' : isConfirmPasswordValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaLock color="#6c757d"/>
+                                    <FaLock color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showConfirmPassword ? 'text' : 'password'}
@@ -762,7 +586,7 @@ function Register() {
                                     onClick={toggleConfirmPasswordVisibility}
                                     style={{cursor: 'pointer'}}
                                 >
-                                    {showConfirmPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
+                                    {showConfirmPassword ? <FaEyeSlash color={styles.colors.secondary}/> : <FaEye color={styles.colors.secondary}/>}
                                 </InputGroup.Text>
                             </InputGroup>
                             <div className="mb-3 text-start">
@@ -785,10 +609,10 @@ function Register() {
                                 type="submit"
                                 className="w-100 mt-3"
                                 style={{
-                                    backgroundColor: '#212529',
+                                    backgroundColor: styles.colors.primary,
                                     border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    borderRadius: styles.input.borderRadius,
+                                    padding: styles.input.padding,
                                 }}
                                 disabled={!isEmailValid || !isPasswordValid || !isConfirmPasswordValid || !agreePrivacy}
                             >
@@ -806,8 +630,8 @@ function Register() {
                                         style={{
                                             width: '40px',
                                             height: '40px',
-                                            backgroundColor: '#f1f3f5',
-                                            borderRadius: '5px',
+                                            backgroundColor: styles.colors.light,
+                                            borderRadius: styles.input.borderRadius,
                                             border: isCodeValid === false && digit !== '' ? '2px solid red' : isCodeValid === true ? '2px solid green' : 'none',
                                         }}
                                         value={digit}
@@ -837,10 +661,10 @@ function Register() {
                                 type="submit"
                                 className="w-100 mt-3"
                                 style={{
-                                    backgroundColor: '#212529',
+                                    backgroundColor: styles.colors.primary,
                                     border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    borderRadius: styles.input.borderRadius,
+                                    padding: styles.input.padding,
                                 }}
                                 disabled={code.some((digit) => digit === '') || !isCodeValid}
                             >
@@ -852,13 +676,13 @@ function Register() {
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isFirstNameValid === false ? '2px solid red' : isFirstNameValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaUser color="#6c757d"/>
+                                    <FaUser color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="text"
@@ -871,13 +695,13 @@ function Register() {
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isLastNameValid === false ? '2px solid red' : isLastNameValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaUser color="#6c757d"/>
+                                    <FaUser color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="text"
@@ -891,10 +715,10 @@ function Register() {
                                 type="submit"
                                 className="w-100 mt-3"
                                 style={{
-                                    backgroundColor: '#212529',
+                                    backgroundColor: styles.colors.primary,
                                     border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    borderRadius: styles.input.borderRadius,
+                                    padding: styles.input.padding,
                                 }}
                                 disabled={!isFirstNameValid || !isLastNameValid}
                             >
@@ -903,7 +727,7 @@ function Register() {
                         </>
                     ) : step === 3 ? (
                         <>
-                            <InputGroup className="mb-3" style={{backgroundColor: '#f1f3f5', borderRadius: '5px'}}>
+                            <InputGroup className="mb-3" style={{backgroundColor: styles.colors.light, borderRadius: styles.input.borderRadius}}>
                                 <Form.Control
                                     type="date"
                                     className="bg-transparent border-0 text-dark"
@@ -915,10 +739,10 @@ function Register() {
                                 type="submit"
                                 className="w-100 mt-3"
                                 style={{
-                                    backgroundColor: '#212529',
+                                    backgroundColor: styles.colors.primary,
                                     border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    borderRadius: styles.input.borderRadius,
+                                    padding: styles.input.padding,
                                 }}
                                 disabled={!birthDate}
                             >
@@ -930,37 +754,37 @@ function Register() {
                             <div
                                 className="mb-3 d-flex align-items-center p-2"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
-                                    border: gender === 'Female' ? '2px solid #28a745' : 'none',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
+                                    border: gender === 'Female' ? '2px solid green' : 'none',
                                     cursor: 'pointer',
                                 }}
                                 onClick={() => setGender('Female')}
                             >
-                                <FaVenus color="#6c757d" className="me-2"/>
+                                <FaVenus color={styles.colors.secondary} className="me-2"/>
                                 <span className="text-dark">Femeie</span>
                             </div>
                             <div
                                 className="mb-3 d-flex align-items-center p-2"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
-                                    border: gender === 'Male' ? '2px solid #28a745' : 'none',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
+                                    border: gender === 'Male' ? '2px solid green' : 'none',
                                     cursor: 'pointer',
                                 }}
                                 onClick={() => setGender('Male')}
                             >
-                                <FaMars color="#6c757d" className="me-2"/>
+                                <FaMars color={styles.colors.secondary} className="me-2"/>
                                 <span className="text-dark">Bărbat</span>
                             </div>
                             <Button
                                 type="submit"
                                 className="w-100 mt-3"
                                 style={{
-                                    backgroundColor: '#212529',
+                                    backgroundColor: styles.colors.primary,
                                     border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    borderRadius: styles.input.borderRadius,
+                                    padding: styles.input.padding,
                                 }}
                                 disabled={!gender}
                             >
@@ -974,8 +798,8 @@ function Register() {
                                 style={{
                                     width: '150px',
                                     height: '150px',
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '10px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     cursor: 'pointer',
                                     margin: '0 auto',
                                     overflow: 'hidden',
@@ -989,7 +813,7 @@ function Register() {
                                         style={{width: '100%', height: '100%', objectFit: 'cover'}}
                                     />
                                 ) : (
-                                    <FaImage color="#6c757d" size={50}/>
+                                    <FaImage color={styles.colors.secondary} size={50}/>
                                 )}
                             </div>
                             <input
@@ -1003,10 +827,10 @@ function Register() {
                                 type="submit"
                                 className="w-100 mt-3"
                                 style={{
-                                    backgroundColor: '#212529',
+                                    backgroundColor: styles.colors.primary,
                                     border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    borderRadius: styles.input.borderRadius,
+                                    padding: styles.input.padding,
                                 }}
                                 disabled={!profileImage}
                             >
@@ -1027,105 +851,9 @@ function Register() {
                                 </span>
                             </div>
                         )}
-                        <div className="text-end">
-                            <Link to="/login" className="text-dark">Back to Login</Link>
-                        </div>
                     </div>
                 </Form>
             </div>
-
-            {showModal && (
-                <div
-                    className="position-fixed"
-                    style={{
-                        top: '10px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        backgroundColor: '#212529',
-                        color: '#fff',
-                        padding: '0 20px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                        zIndex: 1000,
-                        animation: 'openDynamicIsland 1s ease-in-out forwards, closeDynamicIsland 1s ease-in-out 3s forwards',
-                    }}
-                >
-                    <FaSpinner
-                        style={{
-                            position: 'absolute',
-                            animation: 'spin 1s linear infinite',
-                            opacity: showText ? 0 : 1,
-                            transition: 'opacity 0.3s ease',
-                        }}
-                    />
-                    <p
-                        style={{
-                            margin: 0,
-                            fontSize: '14px',
-                            opacity: showText ? 1 : 0,
-                            transition: 'opacity 0.3s ease',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '260px',
-                        }}
-                    >
-                        {currentMessage}
-                    </p>
-                </div>
-            )}
-
-            <style>
-                {`
-                    @keyframes openDynamicIsland {
-                        0% {
-                            transform: translateX(-50%) translateY(-100%);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 0;
-                        }
-                        50% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 300px;
-                            border-radius: 20px;
-                            opacity: 1;
-                        }
-                    }
-                    @keyframes closeDynamicIsland {
-                        0% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 300px;
-                            border-radius: 20px;
-                            opacity: 1;
-                        }
-                        50% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateX(-50%) translateY(-100%);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 0;
-                        }
-                    }
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}
-            </style>
         </Container>
     );
 }
@@ -1133,8 +861,8 @@ function Register() {
 function PrivacyPolicy() {
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{maxWidth: '600px'}}>
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+            <div className="text-center w-100" style={{maxWidth: styles.container.wide}}>
+                <h2 className="text-dark mb-3" style={{fontSize: styles.fonts.heading.medium}}>
                     Privacy Policy
                 </h2>
                 <p className="text-dark text-start">
@@ -1200,9 +928,6 @@ function PrivacyPolicy() {
 function ResetPassword() {
     const [email, setEmail] = useState('');
     const [isEmailValid, setIsEmailValid] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [currentMessage, setCurrentMessage] = useState('');
-    const [showText, setShowText] = useState(false);
     const [step, setStep] = useState(1);
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isCodeValid, setIsCodeValid] = useState(null);
@@ -1220,18 +945,12 @@ function ResetPassword() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isValid = emailRegex.test(value);
         setIsEmailValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Invalid email address. Please include "@" and a valid domain (e.g., .com).');
-        }
         return isValid;
     };
 
     const validateCode = (codeArray) => {
         const isValid = codeArray.every((digit) => /^\d$/.test(digit));
         setIsCodeValid(isValid);
-        if (!isValid && codeArray.some((digit) => digit !== '')) {
-            displayNotification('Code must contain exactly 6 digits.');
-        }
         return isValid;
     };
 
@@ -1239,18 +958,12 @@ function ResetPassword() {
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
         const isValid = passwordRegex.test(value);
         setIsNewPasswordValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Password: 6+ chars, 1 letter, 1 number');
-        }
         return isValid;
     };
 
     const validateConfirmPassword = (value) => {
         const isValid = value === newPassword;
         setIsConfirmPasswordValid(isValid);
-        if (!isValid && value) {
-            displayNotification('Passwords do not match.');
-        }
         return isValid;
     };
 
@@ -1307,34 +1020,18 @@ function ResetPassword() {
         if (step === 1) {
             if (isEmailValid) {
                 console.log('Server response: 200, Email:', email);
-                displayNotification(`Verification code sent to ${email}`);
                 setStep(2);
                 setTimer(60);
                 setShowResendButton(false);
-            } else if (email) {
-                console.log('Server response: 400, Invalid email');
-                displayNotification('Invalid email address. Please try again.');
-            } else {
-                displayNotification('Please enter your email address.');
             }
         } else if (step === 2) {
             if (isCodeValid) {
                 console.log('Code verified:', code.join(''));
-                displayNotification('Code verified successfully!');
                 setStep(3);
-            } else if (code.some((digit) => digit !== '')) {
-                displayNotification('Invalid code. Please try again.');
-            } else {
-                displayNotification('Please enter the verification code.');
             }
         } else if (step === 3) {
             if (isNewPasswordValid && isConfirmPasswordValid) {
                 console.log('Password reset successfully, New Password:', newPassword);
-                displayNotification('Password reset successfully!');
-            } else if (!isNewPasswordValid) {
-                displayNotification('Password: 6+ chars, 1 letter, 1 number');
-            } else if (!isConfirmPasswordValid) {
-                displayNotification('Passwords do not match.');
             }
         }
     };
@@ -1347,45 +1044,9 @@ function ResetPassword() {
 
     const handleResendCode = () => {
         console.log('Resending code to:', email);
-        displayNotification(`Verification code resent to ${email}`);
         setTimer(60);
         setShowResendButton(false);
     };
-
-    const displayNotification = (message) => {
-        if (showModal) {
-            setShowModal(false);
-            setShowText(false);
-            setTimeout(() => {
-                setCurrentMessage(message);
-                setShowModal(true);
-            }, 500);
-        } else {
-            setCurrentMessage(message);
-            setShowModal(true);
-        }
-    };
-
-    useEffect(() => {
-        if (showModal) {
-            const textTimer = setTimeout(() => {
-                setShowText(true);
-            }, 1000);
-
-            const closeTimer = setTimeout(() => {
-                setShowText(false);
-                setTimeout(() => {
-                    setShowModal(false);
-                    setCurrentMessage('');
-                }, 500);
-            }, 3000);
-
-            return () => {
-                clearTimeout(textTimer);
-                clearTimeout(closeTimer);
-            };
-        }
-    }, [showModal]);
 
     useEffect(() => {
         if (step === 2 && timer > 0 && !showResendButton) {
@@ -1418,8 +1079,8 @@ function ResetPassword() {
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
-            <div className="text-center w-100" style={{maxWidth: '400px'}}>
-                <h2 className="text-dark mb-3" style={{fontSize: '2rem'}}>
+            <div className="text-center w-100" style={{maxWidth: styles.container.maxWidth}}>
+                <h2 className="text-dark mb-3" style={{fontSize: styles.fonts.heading.medium}}>
                     Reset Password
                 </h2>
                 <p className="text-dark mb-4">{getStepInstruction()}</p>
@@ -1430,7 +1091,7 @@ function ResetPassword() {
                         left: '16px',
                         right: '16px',
                         height: '2px',
-                        backgroundColor: '#6c757d',
+                        backgroundColor: styles.colors.secondary,
                         zIndex: 0
                     }}></div>
                     <div
@@ -1440,7 +1101,7 @@ function ResetPassword() {
                             left: `${16 + (step - 1) * (100 / 3)}px`,
                             width: `${(step - 1) * (100 / 3)}px`,
                             height: '2px',
-                            backgroundColor: '#28a745',
+                            backgroundColor: styles.colors.success,
                             zIndex: 1,
                             transition: 'width 0.3s ease, left 0.3s ease',
                         }}
@@ -1450,7 +1111,7 @@ function ResetPassword() {
                             width: '30px',
                             height: '30px',
                             borderRadius: '50%',
-                            backgroundColor: step >= 1 ? '#28a745' : '#6c757d',
+                            backgroundColor: step >= 1 ? styles.colors.success : styles.colors.secondary,
                             color: '#fff',
                             display: 'flex',
                             alignItems: 'center',
@@ -1466,7 +1127,7 @@ function ResetPassword() {
                             width: '30px',
                             height: '30px',
                             borderRadius: '50%',
-                            backgroundColor: step >= 2 ? '#28a745' : '#6c757d',
+                            backgroundColor: step >= 2 ? styles.colors.success : styles.colors.secondary,
                             color: '#fff',
                             display: 'flex',
                             alignItems: 'center',
@@ -1482,7 +1143,7 @@ function ResetPassword() {
                             width: '30px',
                             height: '30px',
                             borderRadius: '50%',
-                            backgroundColor: step >= 3 ? '#28a745' : '#6c757d',
+                            backgroundColor: step >= 3 ? styles.colors.success : styles.colors.secondary,
                             color: '#fff',
                             display: 'flex',
                             alignItems: 'center',
@@ -1504,13 +1165,13 @@ function ResetPassword() {
                         <InputGroup
                             className="mb-3"
                             style={{
-                                backgroundColor: '#f1f3f5',
-                                borderRadius: '5px',
+                                backgroundColor: styles.colors.light,
+                                borderRadius: styles.input.borderRadius,
                                 borderBottom: isEmailValid === false ? '2px solid red' : isEmailValid === true ? '2px solid green' : 'none',
                             }}
                         >
                             <InputGroup.Text className="bg-transparent border-0">
-                                <FaEnvelope color="#6c757d"/>
+                                <FaEnvelope color={styles.colors.secondary}/>
                             </InputGroup.Text>
                             <Form.Control
                                 type="email"
@@ -1531,8 +1192,8 @@ function ResetPassword() {
                                         style={{
                                             width: '40px',
                                             height: '40px',
-                                            backgroundColor: '#f1f3f5',
-                                            borderRadius: '5px',
+                                            backgroundColor: styles.colors.light,
+                                            borderRadius: styles.input.borderRadius,
                                             border: isCodeValid === false && digit !== '' ? '2px solid red' : isCodeValid === true ? '2px solid green' : 'none',
                                         }}
                                         value={digit}
@@ -1564,13 +1225,13 @@ function ResetPassword() {
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isNewPasswordValid === false ? '2px solid red' : isNewPasswordValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaLock color="#6c757d"/>
+                                    <FaLock color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showNewPassword ? 'text' : 'password'}
@@ -1584,19 +1245,19 @@ function ResetPassword() {
                                     onClick={toggleNewPasswordVisibility}
                                     style={{cursor: 'pointer'}}
                                 >
-                                    {showNewPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
+                                    {showNewPassword ? <FaEyeSlash color={styles.colors.secondary}/> : <FaEye color={styles.colors.secondary}/>}
                                 </InputGroup.Text>
                             </InputGroup>
                             <InputGroup
                                 className="mb-3"
                                 style={{
-                                    backgroundColor: '#f1f3f5',
-                                    borderRadius: '5px',
+                                    backgroundColor: styles.colors.light,
+                                    borderRadius: styles.input.borderRadius,
                                     borderBottom: isConfirmPasswordValid === false ? '2px solid red' : isConfirmPasswordValid === true ? '2px solid green' : 'none',
                                 }}
                             >
                                 <InputGroup.Text className="bg-transparent border-0">
-                                    <FaLock color="#6c757d"/>
+                                    <FaLock color={styles.colors.secondary}/>
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showConfirmPassword ? 'text' : 'password'}
@@ -1610,7 +1271,7 @@ function ResetPassword() {
                                     onClick={toggleConfirmPasswordVisibility}
                                     style={{cursor: 'pointer'}}
                                 >
-                                    {showConfirmPassword ? <FaEyeSlash color="#6c757d"/> : <FaEye color="#6c757d"/>}
+                                    {showConfirmPassword ? <FaEyeSlash color={styles.colors.secondary}/> : <FaEye color={styles.colors.secondary}/>}
                                 </InputGroup.Text>
                             </InputGroup>
                         </>
@@ -1619,10 +1280,10 @@ function ResetPassword() {
                         type="submit"
                         className="w-100 mt-3"
                         style={{
-                            backgroundColor: '#212529',
+                            backgroundColor: styles.colors.primary,
                             border: 'none',
-                            borderRadius: '5px',
-                            padding: '10px',
+                            borderRadius: styles.input.borderRadius,
+                            padding: styles.input.padding,
                         }}
                         disabled={
                             (step === 1 && (email.length === 0 || !isEmailValid)) ||
@@ -1634,8 +1295,8 @@ function ResetPassword() {
                     </Button>
                 </Form>
                 <div className="d-flex justify-content-between mt-3" style={{width: '100%'}}>
-                    <div className="text-start">
-                        {step > 1 && (
+                    {step > 1 && (
+                        <div className="text-start">
                             <span
                                 className="text-dark"
                                 style={{cursor: 'pointer'}}
@@ -1643,106 +1304,56 @@ function ResetPassword() {
                             >
                                 Back to Previous Step
                             </span>
-                        )}
-                    </div>
-                    <div className="text-end">
-                        <Link to="/login" className="text-dark">Back to Login</Link>
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
+        </Container>
+    );
+}
 
-            {showModal && (
-                <div
-                    className="position-fixed"
-                    style={{
-                        top: '10px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        backgroundColor: '#212529',
-                        color: '#fff',
-                        padding: '0 20px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                        zIndex: 1000,
-                        animation: 'openDynamicIsland 1s ease-in-out forwards, closeDynamicIsland 1s ease-in-out 3s forwards',
-                    }}
-                >
-                    <FaSpinner
+function Home() {
+    return (
+        <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
+            <div className="text-center w-100" style={{maxWidth: styles.container.maxWidth}}>
+                <h1 className="text-dark mb-2" style={{fontSize: styles.fonts.heading.large, fontWeight: 'bold'}}>
+                    Welcome to CAS
+                </h1>
+                <p className="text-dark mb-4" style={{fontSize: styles.fonts.heading.small}}>
+                    Your secure authentication solution
+                </p>
+                <div className="d-flex flex-column gap-3">
+                    <Button
+                        as={Link}
+                        to="/login"
+                        className="w-100"
                         style={{
-                            position: 'absolute',
-                            animation: 'spin 1s linear infinite',
-                            opacity: showText ? 0 : 1,
-                            transition: 'opacity 0.3s ease',
-                        }}
-                    />
-                    <p
-                        style={{
-                            margin: 0,
-                            fontSize: '14px',
-                            opacity: showText ? 1 : 0,
-                            transition: 'opacity 0.3s ease',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '260px',
+                            backgroundColor: styles.colors.primary,
+                            border: 'none',
+                            borderRadius: styles.input.borderRadius,
+                            padding: styles.input.padding,
+                            fontSize: styles.fonts.heading.small
                         }}
                     >
-                        {currentMessage}
-                    </p>
+                        Login
+                    </Button>
+                    <Button
+                        as={Link}
+                        to="/register"
+                        className="w-100"
+                        style={{
+                            backgroundColor: styles.colors.light,
+                            border: 'none',
+                            borderRadius: styles.input.borderRadius,
+                            padding: styles.input.padding,
+                            color: styles.colors.dark,
+                            fontSize: styles.fonts.heading.small
+                        }}
+                    >
+                        Register
+                    </Button>
                 </div>
-            )}
-
-            <style>
-                {`
-                    @keyframes openDynamicIsland {
-                        0% {
-                            transform: translateX(-50%) translateY(-100%);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 0;
-                        }
-                        50% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 300px;
-                            border-radius: 20px;
-                            opacity: 1;
-                        }
-                    }
-                    @keyframes closeDynamicIsland {
-                        0% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 300px;
-                            border-radius: 20px;
-                            opacity: 1;
-                        }
-                        50% {
-                            transform: translateX(-50%) translateY(0);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateX(-50%) translateY(-100%);
-                            width: 40px;
-                            border-radius: '50%;
-                            opacity: 0;
-                        }
-                    }
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}
-            </style>
+            </div>
         </Container>
     );
 }
@@ -1752,7 +1363,7 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<Login/>}/>
+                    <Route path="/" element={<Home/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/reset-password" element={<ResetPassword/>}/>
