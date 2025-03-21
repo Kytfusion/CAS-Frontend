@@ -917,8 +917,22 @@ function PrivacyPolicy() {
                 <p className="text-dark text-start mt-4">
                     If you have any questions about this Privacy Policy, please contact us at support@example.com.
                 </p>
-                <div className="text-end mt-4">
-                    <Link to="/register" className="text-dark">Back to Register</Link>
+                <div className="d-flex justify-content-center mt-4 mb-4">
+                    <Button
+                        as={Link}
+                        to="/register"
+                        className="w-100"
+                        style={{
+                            backgroundColor: styles.colors.primary,
+                            border: 'none',
+                            borderRadius: styles.input.borderRadius,
+                            padding: styles.input.padding,
+                            fontSize: styles.fonts.heading.small,
+                            maxWidth: styles.container.maxWidth
+                        }}
+                    >
+                        Back to Register
+                    </Button>
                 </div>
             </div>
         </Container>
