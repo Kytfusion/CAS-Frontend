@@ -38,6 +38,32 @@ const styles = {
     container: {
         maxWidth: '400px',
         wide: '600px'
+    },
+    button: {
+        primary: {
+            backgroundColor: '#212529',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            padding: '12px',
+            fontSize: '1.1rem'
+        },
+        secondary: {
+            backgroundColor: '#f1f3f5',
+            color: '#212529',
+            border: 'none',
+            borderRadius: '5px',
+            padding: '12px',
+            fontSize: '1.1rem'
+        }
+    },
+    text: {
+        color: '#212529',
+        fontSize: '1rem'
+    },
+    link: {
+        color: '#212529',
+        textDecoration: 'none'
     }
 };
 
@@ -862,7 +888,7 @@ function PrivacyPolicy() {
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
             <div className="text-center w-100" style={{maxWidth: styles.container.wide}}>
-                <h2 className="text-dark mb-3" style={{fontSize: styles.fonts.heading.medium}}>
+                <h2 className="text-dark mb-3" style={{fontSize: styles.fonts.heading.medium, color: styles.colors.dark}}>
                     Privacy Policy
                 </h2>
                 <p className="text-dark text-start">
@@ -922,14 +948,7 @@ function PrivacyPolicy() {
                         as={Link}
                         to="/register"
                         className="w-100"
-                        style={{
-                            backgroundColor: styles.colors.primary,
-                            border: 'none',
-                            borderRadius: styles.input.borderRadius,
-                            padding: styles.input.padding,
-                            fontSize: styles.fonts.heading.small,
-                            maxWidth: styles.container.maxWidth
-                        }}
+                        style={{...styles.button.primary, maxWidth: styles.container.maxWidth}}
                     >
                         Back to Register
                     </Button>
@@ -1330,10 +1349,10 @@ function Home() {
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
             <div className="text-center w-100" style={{maxWidth: styles.container.maxWidth}}>
-                <h1 className="text-dark mb-2" style={{fontSize: styles.fonts.heading.large, fontWeight: 'bold'}}>
+                <h1 className="text-dark mb-2" style={{fontSize: styles.fonts.heading.large, fontWeight: 'bold', color: styles.colors.dark}}>
                     Welcome to CAS
                 </h1>
-                <p className="text-dark mb-4" style={{fontSize: styles.fonts.heading.small}}>
+                <p className="text-dark mb-4" style={{fontSize: styles.fonts.heading.small, color: styles.colors.dark}}>
                     Your secure authentication solution
                 </p>
                 <div className="d-flex flex-column gap-3">
@@ -1341,13 +1360,7 @@ function Home() {
                         as={Link}
                         to="/login"
                         className="w-100"
-                        style={{
-                            backgroundColor: styles.colors.primary,
-                            border: 'none',
-                            borderRadius: styles.input.borderRadius,
-                            padding: styles.input.padding,
-                            fontSize: styles.fonts.heading.small
-                        }}
+                        style={styles.button.primary}
                     >
                         Login
                     </Button>
@@ -1355,14 +1368,7 @@ function Home() {
                         as={Link}
                         to="/register"
                         className="w-100"
-                        style={{
-                            backgroundColor: styles.colors.light,
-                            border: 'none',
-                            borderRadius: styles.input.borderRadius,
-                            padding: styles.input.padding,
-                            color: styles.colors.dark,
-                            fontSize: styles.fonts.heading.small
-                        }}
+                        style={styles.button.secondary}
                     >
                         Register
                     </Button>
