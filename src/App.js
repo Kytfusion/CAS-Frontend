@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {useState, useEffect, useRef} from 'react';
 import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
-import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner, FaUser, FaVenus, FaMars, FaImage} from 'react-icons/fa';
+import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaVenus, FaMars, FaImage} from 'react-icons/fa';
 
 const styles = {
     colors: {
