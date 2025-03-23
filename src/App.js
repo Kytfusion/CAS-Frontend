@@ -850,8 +850,8 @@ function Register() {
                                 </div>
                                 {profileImagePreview && (
                                     <Button
-                                        style={{
-                                            position: 'absolute',
+                                style={{
+                                    position: 'absolute',
                                             top: -10,
                                             right: -10,
                                             width: '25px',
