@@ -47,7 +47,8 @@
     "setNewPassword": "Setați o nouă parolă",
     "newPassword": "Parolă nouă",
     "confirmNewPassword": "Confirmați parola nouă",
-    "resetPasswordButton": "Resetează parola"
+    "resetPasswordButton": "Resetează parola",
+    "backToRegistration": "Înapoi"
   },
   "ru": {
     "welcome": "Добро пожаловать на нашу платформу",
@@ -97,7 +98,8 @@
     "setNewPassword": "Установить новый пароль",
     "newPassword": "Новый пароль",
     "confirmNewPassword": "Подтвердите новый пароль",
-    "resetPasswordButton": "Сбросить пароль"
+    "resetPasswordButton": "Сбросить пароль",
+    "backToRegistration": "Назад"
   },
   "eng": {
     "welcome": "Welcome to Our Platform",
@@ -147,6 +149,7 @@
     "setNewPassword": "Set new password",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
-    "resetPasswordButton": "Reset Password"
+    "resetPasswordButton": "Reset Password",
+    "backToRegistration": "Back"
   }
 } 

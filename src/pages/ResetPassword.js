@@ -1,4 +1,4 @@
-import {useState, useRef} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
 import {FaEnvelope, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa';
@@ -20,6 +20,22 @@ function ResetPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { translate } = useLanguage();
+
+    useEffect(() => {
+        let interval;
+        if (timer > 0 && !showResendButton) {
+            interval = setInterval(() => {
+                setTimer((prevTimer) => {
+                    if (prevTimer <= 1) {
+                        setShowResendButton(true);
+                        return 0;
+                    }
+                    return prevTimer - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [timer, showResendButton]);
 
     const validateEmail = (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -171,14 +187,14 @@ function ResetPassword() {
                                 ))}
                             </div>
                             {!showResendButton ? (
-                                <p className="mb-3">{translate('resendCodeIn')} {timer}{translate('seconds')}</p>
+                                <p className="mb-3">Retrimitere cod în {timer} secunde</p>
                             ) : (
                                 <Button
                                     variant="link"
                                     onClick={handleResendCode}
-                                    className="mb-3"
+                                    className="mb-3 text-dark text-decoration-none p-0"
                                 >
-                                    {translate('resendCode')}
+                                    Retrimite codul
                                 </Button>
                             )}
                         </>
@@ -237,19 +253,10 @@ function ResetPassword() {
                         </>
                     )}
 
-                    <div className="d-flex justify-content-between">
-                        {step > 0 && (
-                            <Button
-                                variant="outline-primary"
-                                onClick={handlePreviousStep}
-                                className="bg-light border-0 rounded py-2"
-                            >
-                                {translate('previous')}
-                            </Button>
-                        )}
+                    <div className="d-flex justify-content-center">
                         <Button
                             type="submit"
-                            className="flex-grow-1 ms-3 bg-dark text-white border-0 rounded py-2"
+                            className="w-100 bg-dark text-white border-0 rounded py-2"
                             disabled={
                                 (step === 0 && !isEmailValid) ||
                                 (step === 1 && !isCodeValid) ||
@@ -261,7 +268,19 @@ function ResetPassword() {
                     </div>
                 </Form>
                 <p className="text-start mt-3 w-100">
-                    {translate('rememberPassword')} <Link to="/login" className="text-dark text-decoration-none">{translate('signInLink')}</Link>
+                    {step > 0 ? (
+                        <span 
+                            onClick={handlePreviousStep} 
+                            style={{cursor: 'pointer'}} 
+                            className="text-dark text-decoration-none"
+                        >
+                            Pasul precedent
+                        </span>
+                    ) : (
+                        <>
+                            {translate('rememberPassword')} <Link to="/login" className="text-dark text-decoration-none">{translate('signInLink')}</Link>
+                        </>
+                    )}
                 </p>
             </div>
         </Container>

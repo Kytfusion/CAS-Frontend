@@ -81,7 +81,7 @@ function PrivacyPolicy() {
                 <Link to="/register" className="text-decoration-none">
                     <Button
                         variant="primary"
-                        className="bg-dark border-0 rounded py-2 px-4"
+                        className="w-100 bg-dark text-white border-0 rounded py-2"
                     >
                         {translate('backToRegistration')}
                     </Button>

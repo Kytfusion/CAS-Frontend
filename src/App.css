@@ -44,7 +44,7 @@
 }
 
 .dark-theme .text-dark {
-    color: #ffffff !important;
+    color: #e0e0e0 !important;
 }
 
 .dark-theme .bg-light {
@@ -62,24 +62,29 @@
 .dark-theme .form-control {
     background-color: #2d2d2d;
     border-color: #404040;
-    color: #ffffff;
+    color: #e0e0e0;
 }
 
 .dark-theme .form-control:focus {
     background-color: #2d2d2d;
-    border-color: #404040;
+    border-color: #505050;
     color: #ffffff;
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
 }
 
+.dark-theme .form-control::placeholder {
+    color: #a0a0a0;
+}
+
 .dark-theme .btn-outline-primary {
-    color: #ffffff;
+    color: #e0e0e0;
     border-color: #404040;
 }
 
 .dark-theme .btn-outline-primary:hover {
     background-color: #404040;
     border-color: #404040;
+    color: #ffffff;
 }
 
 .dark-theme .btn-primary {
@@ -97,9 +102,17 @@
 }
 
 .dark-theme .link {
-    color: #ffffff;
+    color: #e0e0e0;
 }
 
 .dark-theme .link:hover {
-    color: #a0a0a0;
+    color: #ffffff;
+}
+
+.dark-theme a {
+    color: #e0e0e0;
+}
+
+.dark-theme a:hover {
+    color: #ffffff;
 }
