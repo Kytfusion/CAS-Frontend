@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
 import {FaEnvelope, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa';
+import { useLanguage } from '../App';
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -9,6 +10,7 @@ function Login() {
     const [password, setPassword] = useState('');
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
+    const { translate } = useLanguage();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -51,9 +53,9 @@ function Login() {
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
             <div className="text-center w-100" style={{maxWidth: '400px'}}>
                 <h2 className="text-dark mb-3 fs-2">
-                    Welcome Back
+                    {translate('welcomeBack')}
                 </h2>
-                <p className="text-dark">Please enter your credentials to log in.</p>
+                <p className="text-dark">{translate('enterCredentials')}</p>
                 <Form className="mt-3" onSubmit={handleSignIn}>
                     <InputGroup
                         className="mb-3 bg-light rounded"
@@ -66,7 +68,7 @@ function Login() {
                         </InputGroup.Text>
                         <Form.Control
                             type="email"
-                            placeholder="Email"
+                            placeholder={translate('email')}
                             className="bg-transparent border-0 text-dark"
                             value={email}
                             onChange={handleEmailChange}
@@ -83,7 +85,7 @@ function Login() {
                         </InputGroup.Text>
                         <Form.Control
                             type={showPassword ? 'text' : 'password'}
-                            placeholder="Password"
+                            placeholder={translate('password')}
                             className="bg-transparent border-0 text-dark"
                             value={password}
                             onChange={handlePasswordChange}
@@ -97,17 +99,17 @@ function Login() {
                         </InputGroup.Text>
                     </InputGroup>
                     <div className="text-end mt-2 w-100">
-                        <Link to="/reset-password" className="text-dark text-decoration-none">Reset: Password</Link>
+                        <Link to="/reset-password" className="text-dark text-decoration-none">{translate('resetPassword')}</Link>
                     </div>
                     <Button
                         type="submit"
                         className="w-100 mt-3 bg-dark text-white border-0 rounded py-2"
                         disabled={!isEmailValid || !isPasswordValid}
                     >
-                        Sign In
+                        {translate('signIn')}
                     </Button>
                     <p className="text-start mt-3 w-100">
-                        Don't have an account? <Link to="/register" className="text-dark text-decoration-none">Sign Up</Link>
+                        {translate('dontHaveAccount')} <Link to="/register" className="text-dark text-decoration-none">{translate('signUpLink')}</Link>
                     </p>
                 </Form>
             </div>

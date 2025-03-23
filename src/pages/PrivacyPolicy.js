@@ -1,12 +1,15 @@
 import {Container, Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
+import { useLanguage } from '../App';
 
 function PrivacyPolicy() {
+    const { translate } = useLanguage();
+
     return (
         <Container className="py-5">
             <div className="text-center mb-5">
                 <h1 className="text-dark mb-3 fs-1">
-                    Privacy Policy
+                    {translate('privacyPolicy')}
                 </h1>
                 <p className="text-dark">Last updated: {new Date().toLocaleDateString()}</p>
             </div>
@@ -80,7 +83,7 @@ function PrivacyPolicy() {
                         variant="primary"
                         className="bg-dark border-0 rounded py-2 px-4"
                     >
-                        Back to Registration
+                        {translate('backToRegistration')}
                     </Button>
                 </Link>
             </div>

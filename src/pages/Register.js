@@ -2,6 +2,7 @@ import {useState, useRef} from 'react';
 import {Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
 import {FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaVenus, FaMars, FaImage} from 'react-icons/fa';
+import { useLanguage } from '../App';
 
 function Register() {
     const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ function Register() {
     const [profileImage, setProfileImage] = useState(null);
     const [profileImagePreview, setProfileImagePreview] = useState(null);
     const fileInputRef = useRef(null);
+    const { translate } = useLanguage();
 
     const validateEmail = (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -185,11 +187,11 @@ function Register() {
     const getStepInstruction = () => {
         switch (step) {
             case 0:
-                return 'Create your account';
+                return translate('createYourAccount');
             case 1:
-                return 'Enter verification code';
+                return translate('enterVerificationCode');
             case 2:
-                return 'Complete your profile';
+                return translate('completeYourProfile');
             default:
                 return '';
         }
@@ -215,7 +217,7 @@ function Register() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="email"
-                                    placeholder="Email"
+                                    placeholder={translate('email')}
                                     className="bg-transparent border-0 text-dark"
                                     value={email}
                                     onChange={handleEmailChange}
@@ -232,7 +234,7 @@ function Register() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showPassword ? 'text' : 'password'}
-                                    placeholder="Password"
+                                    placeholder={translate('password')}
                                     className="bg-transparent border-0 text-dark"
                                     value={password}
                                     onChange={handlePasswordChange}
@@ -256,7 +258,7 @@ function Register() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showConfirmPassword ? 'text' : 'password'}
-                                    placeholder="Confirm Password"
+                                    placeholder={translate('confirmNewPassword')}
                                     className="bg-transparent border-0 text-dark"
                                     value={confirmPassword}
                                     onChange={handleConfirmPasswordChange}
@@ -274,7 +276,7 @@ function Register() {
                                 id="privacy-check"
                                 label={
                                     <span>
-                                        I agree to the <Link to="/privacy" className="text-dark text-decoration-none">Privacy Policy</Link>
+                                        {translate('agreePrivacy')} <Link to="/privacy" className="text-dark text-decoration-none">{translate('privacyPolicyLink')}</Link>
                                     </span>
                                 }
                                 checked={agreePrivacy}
@@ -302,14 +304,14 @@ function Register() {
                                 ))}
                             </div>
                             {!showResendButton ? (
-                                <p className="mb-3">Resend code in {timer}s</p>
+                                <p className="mb-3">{translate('resendCodeIn')} {timer}{translate('seconds')}</p>
                             ) : (
                                 <Button
                                     variant="link"
                                     onClick={handleResendCode}
                                     className="mb-3"
                                 >
-                                    Resend Code
+                                    {translate('resendCode')}
                                 </Button>
                             )}
                         </>
@@ -331,7 +333,7 @@ function Register() {
                                 {profileImagePreview ? (
                                     <img
                                         src={profileImagePreview}
-                                        alt="Profile"
+                                        alt={translate('profileImage')}
                                         className="w-100 h-100"
                                         style={{objectFit: 'cover'}}
                                     />
@@ -357,7 +359,7 @@ function Register() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="text"
-                                    placeholder="First Name"
+                                    placeholder={translate('firstName')}
                                     className="bg-transparent border-0 text-dark"
                                     value={firstName}
                                     onChange={handleFirstNameChange}
@@ -374,7 +376,7 @@ function Register() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="text"
-                                    placeholder="Last Name"
+                                    placeholder={translate('lastName')}
                                     className="bg-transparent border-0 text-dark"
                                     value={lastName}
                                     onChange={handleLastNameChange}
@@ -393,7 +395,7 @@ function Register() {
                                     className="flex-grow-1"
                                 >
                                     <FaMars className="me-2"/>
-                                    Male
+                                    {translate('male')}
                                 </Button>
                                 <Button
                                     variant={gender === 'female' ? 'primary' : 'outline-primary'}
@@ -401,7 +403,7 @@ function Register() {
                                     className="flex-grow-1"
                                 >
                                     <FaVenus className="me-2"/>
-                                    Female
+                                    {translate('female')}
                                 </Button>
                             </div>
                         </>
@@ -414,7 +416,7 @@ function Register() {
                                 onClick={handlePreviousStep}
                                 className="bg-light border-0 rounded py-2"
                             >
-                                Previous
+                                {translate('previous')}
                             </Button>
                         )}
                         <Button
@@ -426,12 +428,12 @@ function Register() {
                                 (step === 2 && (!isFirstNameValid || !isLastNameValid || !birthDate || !gender))
                             }
                         >
-                            {step === 2 ? 'Complete Registration' : 'Next'}
+                            {step === 2 ? translate('completeRegistration') : translate('next')}
                         </Button>
                     </div>
                 </Form>
                 <p className="text-start mt-3 w-100">
-                    Already have an account? <Link to="/login" className="text-dark text-decoration-none">Sign In</Link>
+                    {translate('alreadyHaveAccountLogin')} <Link to="/login" className="text-dark text-decoration-none">{translate('signInLink')}</Link>
                 </p>
             </div>
         </Container>

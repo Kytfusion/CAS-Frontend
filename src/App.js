@@ -6,11 +6,13 @@ import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Home from './pages/Home';
-import { Button } from 'react-bootstrap';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { Button, Dropdown } from 'react-bootstrap';
+import { FaSun, FaMoon, FaGlobe } from 'react-icons/fa';
 import { createContext, useContext, useState, useEffect } from 'react';
+import translations from './translations/translations.json';
 
 const ThemeContext = createContext();
+const LanguageContext = createContext();
 
 function ThemeProvider({ children }) {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -47,6 +49,39 @@ export function useTheme() {
     return context;
 }
 
+function LanguageProvider({ children }) {
+    const [language, setLanguage] = useState(() => {
+        const savedLanguage = localStorage.getItem('language');
+        return savedLanguage || 'eng';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('language', language);
+    }, [language]);
+
+    const translate = (key) => {
+        return translations[language][key] || key;
+    };
+
+    const changeLanguage = (newLanguage) => {
+        setLanguage(newLanguage);
+    };
+
+    return (
+        <LanguageContext.Provider value={{ language, translate, changeLanguage }}>
+            {children}
+        </LanguageContext.Provider>
+    );
+}
+
+export function useLanguage() {
+    const context = useContext(LanguageContext);
+    if (!context) {
+        throw new Error('useLanguage must be used within a LanguageProvider');
+    }
+    return context;
+}
+
 function ThemeToggle() {
     const { isDarkMode, toggleTheme } = useTheme();
 
@@ -62,20 +97,40 @@ function ThemeToggle() {
     );
 }
 
+function LanguageSelector() {
+    const { language, changeLanguage, translate } = useLanguage();
+
+    return (
+        <Dropdown className="position-fixed top-0 start-0 m-3">
+            <Dropdown.Toggle variant="outline-primary" className="rounded-circle p-2" style={{ width: '40px', height: '40px' }}>
+                <FaGlobe />
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+                <Dropdown.Item onClick={() => changeLanguage('md')}>Română</Dropdown.Item>
+                <Dropdown.Item onClick={() => changeLanguage('ru')}>Русский</Dropdown.Item>
+                <Dropdown.Item onClick={() => changeLanguage('eng')}>English</Dropdown.Item>
+            </Dropdown.Menu>
+        </Dropdown>
+    );
+}
+
 function App() {
     return (
-        <ThemeProvider>
-            <Router>
-                <ThemeToggle />
-                <Routes>
-                    <Route path="/" element={<Home/>}/>
-                    <Route path="/login" element={<Login/>}/>
-                    <Route path="/register" element={<Register/>}/>
-                    <Route path="/reset-password" element={<ResetPassword/>}/>
-                    <Route path="/privacy" element={<PrivacyPolicy/>}/>
-                </Routes>
-            </Router>
-        </ThemeProvider>
+        <LanguageProvider>
+            <ThemeProvider>
+                <Router>
+                    <ThemeToggle />
+                    <LanguageSelector />
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/login" element={<Login/>}/>
+                        <Route path="/register" element={<Register/>}/>
+                        <Route path="/reset-password" element={<ResetPassword/>}/>
+                        <Route path="/privacy" element={<PrivacyPolicy/>}/>
+                    </Routes>
+                </Router>
+            </ThemeProvider>
+        </LanguageProvider>
     );
 }
 

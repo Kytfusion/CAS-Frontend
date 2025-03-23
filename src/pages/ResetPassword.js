@@ -2,6 +2,7 @@ import {useState, useRef} from 'react';
 import {Link} from 'react-router-dom';
 import {Container, Form, InputGroup, Button} from 'react-bootstrap';
 import {FaEnvelope, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa';
+import { useLanguage } from '../App';
 
 function ResetPassword() {
     const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ function ResetPassword() {
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { translate } = useLanguage();
 
     const validateEmail = (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -114,11 +116,11 @@ function ResetPassword() {
     const getStepInstruction = () => {
         switch (step) {
             case 0:
-                return 'Enter your email';
+                return translate('email');
             case 1:
-                return 'Enter verification code';
+                return translate('enterVerificationCode');
             case 2:
-                return 'Set new password';
+                return translate('setNewPassword');
             default:
                 return '';
         }
@@ -143,7 +145,7 @@ function ResetPassword() {
                             </InputGroup.Text>
                             <Form.Control
                                 type="email"
-                                placeholder="Email"
+                                placeholder={translate('email')}
                                 className="bg-transparent border-0 text-dark"
                                 value={email}
                                 onChange={handleEmailChange}
@@ -169,14 +171,14 @@ function ResetPassword() {
                                 ))}
                             </div>
                             {!showResendButton ? (
-                                <p className="mb-3">Resend code in {timer}s</p>
+                                <p className="mb-3">{translate('resendCodeIn')} {timer}{translate('seconds')}</p>
                             ) : (
                                 <Button
                                     variant="link"
                                     onClick={handleResendCode}
                                     className="mb-3"
                                 >
-                                    Resend Code
+                                    {translate('resendCode')}
                                 </Button>
                             )}
                         </>
@@ -195,7 +197,7 @@ function ResetPassword() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showPassword ? 'text' : 'password'}
-                                    placeholder="New Password"
+                                    placeholder={translate('newPassword')}
                                     className="bg-transparent border-0 text-dark"
                                     value={newPassword}
                                     onChange={handleNewPasswordChange}
@@ -219,7 +221,7 @@ function ResetPassword() {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type={showConfirmPassword ? 'text' : 'password'}
-                                    placeholder="Confirm New Password"
+                                    placeholder={translate('confirmNewPassword')}
                                     className="bg-transparent border-0 text-dark"
                                     value={confirmPassword}
                                     onChange={handleConfirmPasswordChange}
@@ -242,7 +244,7 @@ function ResetPassword() {
                                 onClick={handlePreviousStep}
                                 className="bg-light border-0 rounded py-2"
                             >
-                                Previous
+                                {translate('previous')}
                             </Button>
                         )}
                         <Button
@@ -254,12 +256,12 @@ function ResetPassword() {
                                 (step === 2 && (!isPasswordValid || !isConfirmPasswordValid))
                             }
                         >
-                            {step === 2 ? 'Reset Password' : 'Next'}
+                            {step === 2 ? translate('resetPasswordButton') : translate('next')}
                         </Button>
                     </div>
                 </Form>
                 <p className="text-start mt-3 w-100">
-                    Remember your password? <Link to="/login" className="text-dark text-decoration-none">Sign In</Link>
+                    {translate('rememberPassword')} <Link to="/login" className="text-dark text-decoration-none">{translate('signInLink')}</Link>
                 </p>
             </div>
         </Container>
