@@ -41,8 +41,8 @@ function Home() {
                         </p>
                         <Link to="/login" className="text-decoration-none">
                             <Button
-                                variant="outline-primary"
-                                className="w-100 bg-light border-0 rounded py-2"
+                                variant="primary"
+                                className="w-100 bg-primary border-0 rounded py-2"
                             >
                                 Sign In
                             </Button>
