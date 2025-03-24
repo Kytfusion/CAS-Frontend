@@ -48,7 +48,13 @@
     "newPassword": "Parolă nouă",
     "confirmNewPassword": "Confirmați parola nouă",
     "resetPasswordButton": "Resetează parola",
-    "backToRegistration": "Înapoi"
+    "backToRegistration": "Înapoi",
+    "stepCredentials": "date",
+    "stepCode": "cod",
+    "stepName": "nume",
+    "stepGender": "gen",
+    "stepBirth": "data",
+    "stepPhoto": "foto"
   },
   "ru": {
     "welcome": "Добро пожаловать на нашу платформу",
@@ -99,7 +105,13 @@
     "newPassword": "Новый пароль",
     "confirmNewPassword": "Подтвердите новый пароль",
     "resetPasswordButton": "Сбросить пароль",
-    "backToRegistration": "Назад"
+    "backToRegistration": "Назад",
+    "stepCredentials": "данные",
+    "stepCode": "код",
+    "stepName": "имя",
+    "stepGender": "пол",
+    "stepBirth": "дата",
+    "stepPhoto": "фото"
   },
   "eng": {
     "welcome": "Welcome to Our Platform",
@@ -150,6 +162,12 @@
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
     "resetPasswordButton": "Reset Password",
-    "backToRegistration": "Back"
+    "backToRegistration": "Back",
+    "stepCredentials": "credentials",
+    "stepCode": "code",
+    "stepName": "name",
+    "stepGender": "gender",
+    "stepBirth": "birth",
+    "stepPhoto": "photo"
   }
 } 

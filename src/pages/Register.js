@@ -236,82 +236,90 @@ function Register() {
     const getStepLabel = (stepNumber) => {
         switch (stepNumber) {
             case 0:
-                return translate('createYourAccount');
+                return translate('stepCredentials');
             case 1:
-                return translate('enterVerificationCode');
+                return translate('stepCode');
             case 2:
-                return translate('completeYourProfile');
+                return translate('stepName');
             case 3:
-                return translate('gender');
+                return translate('stepGender');
             case 4:
-                return translate('birthDate');
+                return translate('stepBirth');
             case 5:
-                return translate('profileImage');
+                return translate('stepPhoto');
             default:
                 return '';
         }
     };
 
+    const calculateProgressWidth = () => {
+        if (step === 0) return '0%';
+        
+        if (step === 5) return '100%';
+        
+        return `${step * 20}%`;
+    };
+
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 position-relative">
             <div className="text-center w-100" style={{maxWidth: '400px'}}>
-                <div className="mb-4">
-                    <div className="position-relative">
+                <div className="mb-5">
+                    <div className="position-relative" style={{padding: '0'}}>
                         <div 
-                            className="position-absolute w-100" 
+                            className="position-absolute" 
                             style={{
                                 height: '2px',
                                 background: '#e9ecef',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
+                                top: '16px',
+                                left: '16px',
+                                right: '16px',
                                 zIndex: 1
                             }}
                         >
                             <div 
                                 style={{
                                     height: '100%',
-                                    width: `${(step / 5) * 100}%`,
-                                    background: '#28a745',
+                                    width: calculateProgressWidth(),
+                                    background: '#007bff',
                                     transition: 'width 0.3s ease'
                                 }}
                             />
                         </div>
                         
-                        <div className="d-flex justify-content-between position-relative" style={{zIndex: 2}}>
+                        <div className="d-flex position-relative justify-content-between" style={{zIndex: 2}}>
                             {[0, 1, 2, 3, 4, 5].map((stepNumber) => (
                                 <div 
                                     key={stepNumber}
                                     className="d-flex flex-column align-items-center"
+                                    style={{
+                                        width: '32px',
+                                        position: 'relative'
+                                    }}
                                 >
                                     <div 
                                         className="rounded-circle d-flex align-items-center justify-content-center"
                                         style={{
-                                            width: '24px',
-                                            height: '24px',
-                                            background: stepNumber <= step ? '#28a745' : '#e9ecef',
-                                            border: '2px solid',
-                                            borderColor: stepNumber <= step ? '#28a745' : '#e9ecef',
+                                            width: '32px',
+                                            height: '32px',
+                                            background: stepNumber <= step ? '#007bff' : '#e9ecef',
+                                            color: stepNumber <= step ? 'white' : '#6c757d',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.9rem',
                                             transition: 'all 0.3s ease'
                                         }}
                                     >
-                                        {stepNumber < step ? (
-                                            <FaCheck className="text-white" size={12} />
-                                        ) : (
-                                            <div 
-                                                className="rounded-circle"
-                                                style={{
-                                                    width: '8px',
-                                                    height: '8px',
-                                                    background: stepNumber === step ? '#28a745' : '#e9ecef'
-                                                }}
-                                            />
-                                        )}
+                                        {stepNumber + 1}
                                     </div>
                                     <div 
-                                        className="small mt-2"
+                                        className="small mt-2 text-center position-absolute"
                                         style={{
-                                            color: stepNumber <= step ? '#28a745' : '#6c757d',
-                                            fontSize: '0.7rem'
+                                            color: stepNumber <= step ? '#007bff' : '#6c757d',
+                                            fontSize: '0.7rem',
+                                            width: '60px',
+                                            top: '35px',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            textTransform: 'lowercase'
                                         }}
                                     >
                                         {getStepLabel(stepNumber)}
